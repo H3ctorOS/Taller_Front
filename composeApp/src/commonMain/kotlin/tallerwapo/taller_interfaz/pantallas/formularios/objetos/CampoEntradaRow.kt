@@ -1,6 +1,7 @@
 package tallerwapo.taller_interfaz.pantallas.formularios.objetos
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,7 +26,7 @@ fun CampoEntradaRow(
         Text(
             text = label,
             style = AppTheme.Body,
-            color = AppTheme.TextSecondary
+            color = AppTheme.TextoSecundario
         )
 
         Spacer(Modifier.height(AppTheme.PaddingS))
@@ -35,7 +36,7 @@ fun CampoEntradaRow(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            textStyle = AppTheme.Input
+            textStyle = AppTheme.Input,
         )
     }
 }

@@ -24,7 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
+import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
+import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.pantallas.formularios.objetos.CampoEntradaRow
 import tallerwapo.taller_interfaz.themes.AppTheme
 @Composable
@@ -71,6 +74,8 @@ fun FormularioNuevoCliente(
             Spacer(modifier = Modifier.width(AppTheme.PaddingM))
 
             Button(onClick = {
+                var respuesta: RespuestaDTO<ClienteBO>
+
                 // Guardar cliente desde dentro del formulario
                 CoroutineScope(Dispatchers.IO).launch {
                     val cliente = ClienteBO(
@@ -85,16 +90,14 @@ fun FormularioNuevoCliente(
                     )
 
                     Logs.info(this, "Creando nuevo cliente")
-                    clientesApi.crearCliente(cliente)
 
-                    // Cerrar la ventana emergente en el hilo principal
+                    val respuesta = clientesApi.crearCliente(cliente)
+
+                    FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
+
                 }
 
-                onCerrar()
-            }
-            ) {
-                Text("Guardar")
-            }
+            }){ Text("Guardar") }
         }
     }
 }

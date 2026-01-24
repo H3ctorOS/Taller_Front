@@ -14,8 +14,8 @@ object AppTheme {
     val Surface = Color(0xFFFFFFFF)         // panels, cards
     val InputBackground = Color(0xFFF0F1F3) // campos de entrada
 
-    val TextPrimary = Color(0xFF1F1F1F)     // texto principal
-    val TextSecondary = Color(0xFF5F6368)   // texto secundario
+    val TextoPrincipal = Color(0xFF1F1F1F)     // texto principal
+    val TextoSecundario = Color(0xFF5F6368)   // texto secundario
 
     val Accent = Color(0xFF1976D2)          // azul profesional
     val Error = Color(0xFFD32F2F)
@@ -25,18 +25,18 @@ object AppTheme {
     val Title = TextStyle(
         fontSize = 22.sp,
         fontWeight = FontWeight.SemiBold,
-        color = TextPrimary
+        color = TextoPrincipal
     )
 
     val Body = TextStyle(
         fontSize = 16.sp,
         fontWeight = FontWeight.Normal,
-        color = TextPrimary
+        color = TextoPrincipal
     )
 
     val Input = TextStyle(
         fontSize = 16.sp,
-        color = TextPrimary
+        color = `TextoPrincipal`
     )
 
     // ───────── Formas ─────────

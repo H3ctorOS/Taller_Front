@@ -38,8 +38,8 @@ object MensajesEmergentes {
         if (dialogoActivo) {
             AlertDialog(
                 onDismissRequest = { /* no cerrar tocando fuera */ },
-                title = { Text(text = titulo, color = AppTheme.TextPrimary) },
-                text = { Text(text = mensaje, color = AppTheme.TextPrimary) },
+                title = { Text(text = titulo, color = AppTheme.TextoPrincipal) },
+                text = { Text(text = mensaje, color = AppTheme.TextoPrincipal) },
                 confirmButton = {
                     // Usamos el primer botón como confirm
                     if (botones.isNotEmpty()) {

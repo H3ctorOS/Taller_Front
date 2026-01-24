@@ -1,6 +1,7 @@
 package tallerwapo.core.dominio.bo
 
 import kotlinx.serialization.Serializable
+import tallerwapo.core.dominio.bo.interfaz.BaseBO
 
 @Serializable
 data class ClienteBO(
@@ -12,4 +13,4 @@ data class ClienteBO(
     val telefono: Int,
     val email: String,
     val estado: String
-)
+): BaseBO

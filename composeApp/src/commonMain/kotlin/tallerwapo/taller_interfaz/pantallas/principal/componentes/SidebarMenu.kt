@@ -9,8 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import tallerwapo.taller_interfaz.pantallas.formularios.FormularioNuevoCliente
-import tallerwapo.taller_interfaz.pantallas.formularios.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
 import tallerwapo.taller_interfaz.themes.AppTheme
 
@@ -44,6 +42,6 @@ private fun SidebarItem(
             .padding(vertical = AppTheme.PaddingS)
             .clickable { onClick() }
     ) {
-        Text(text = text, style = AppTheme.Body, color = AppTheme.TextSecondary)
+        Text(text = text, style = AppTheme.Body, color = AppTheme.TextoSecundario)
     }
 }

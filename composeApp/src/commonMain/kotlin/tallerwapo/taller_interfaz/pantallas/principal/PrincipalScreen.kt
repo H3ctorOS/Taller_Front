@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.AppSidebar
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.BarraInferior
@@ -29,42 +31,47 @@ class PrincipalScreen : Screen {
         // Estado de la pantalla derecha
         var currentScreen by remember { mutableStateOf<Screen>(PruebasScreen()) }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppTheme.Background)
-        ) {
+        Box(Modifier.fillMaxSize().defaultMinSize(minHeight = 2000.dp, minWidth = 2000.dp)) {
 
-            // Contenido principal con sidebar y contenido derecho
-            Row(
+            Column(
                 modifier = Modifier
-                    .weight(1f) // ocupa todo el espacio restante dejando espacio para la barra inferior
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .background(AppTheme.Background)
             ) {
 
-                // Sidebar fijo
-                AppSidebar { screen -> currentScreen = screen }
-
-                // Contenido derecho con scroll
-                Column(
+                // Contenido principal con sidebar y contenido derecho
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .weight(1f) // ocupa todo el espacio restante dejando espacio para la barra inferior
+                        .fillMaxWidth()
                 ) {
 
-                    // Contenedor para el contenido principal
-                    Box(
+                    // Sidebar fijo
+                    AppSidebar { screen -> currentScreen = screen }
+
+                    // Contenido derecho con scroll
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(AppTheme.Surface, AppTheme.CornerRadius)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        currentScreen.Content()
+
+                        // Contenedor para el contenido principal
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(AppTheme.Surface, AppTheme.CornerRadius)
+                        ) {
+                            currentScreen.Content()
+                        }
                     }
                 }
-            }
 
-            // Barra inferior
-            BarraInferior.Contenido()
+                // Barra inferior
+                BarraInferior.Contenido()
+            }
         }
     }
+
+
 }

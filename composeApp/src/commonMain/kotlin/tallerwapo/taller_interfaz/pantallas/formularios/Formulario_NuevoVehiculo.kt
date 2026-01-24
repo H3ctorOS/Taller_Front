@@ -15,7 +15,9 @@ import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
+import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
+import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.themes.AppTheme
 
 @Composable
@@ -82,7 +84,7 @@ fun FormularioNuevoVehiculo(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                Button(onClick = { onCerrar() }) {
+                Button(onClick = {onCerrar()}) {
                     Text("Cancelar")
                 }
 
@@ -100,15 +102,12 @@ fun FormularioNuevoVehiculo(
                         )
 
                         Logs.info(this, "Creando nuevo vehículo")
-                        vehiculosApi.crearVehiculo(vehiculo)
 
+                        val respuesta = vehiculosApi.crearVehiculo(vehiculo)
+                        FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
                     }
 
-                    onCerrar()
-                }) {
-                    Text("Guardar")
-                }
-
+                }){ Text("Guardar") }
             }
         }
     }
