@@ -5,24 +5,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import com.tallerwapo.interfazgrafica.taller_interfazgrafica.pantallas.principal.Principal_Screen
+import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
+import tallerwapo.taller_interfaz.pantallas.principal.PrincipalScreen
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        Navigator(screen = Principal_Screen()){ navigator ->
+        Navigator(screen = PrincipalScreen()){ navigator ->
             SlideTransition(navigator)
         }
+
+        // Emergentes sobre la pantalla
+        MensajesEmergentes.Contenido()
     }
 }
 
-@Composable
-@Preview
-fun AppPC() {
-    MaterialTheme {
-        Navigator(screen = Principal_Screen()){navigator ->
-            SlideTransition(navigator)
-        }
-    }
-}
