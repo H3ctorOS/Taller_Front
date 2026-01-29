@@ -9,6 +9,10 @@ import androidx.compose.ui.unit.sp
 
 object AppTheme {
 
+    // ───────── Colores prueba ─────────
+    val rojo = Color(0xFF921616)
+
+
     // ───────── Colores base (tema claro) ─────────
     val Background = Color(0xFFF5F6F8)      // fondo general (gris claro)
     val Surface = Color(0xFFFFFFFF)         // panels, cards
@@ -17,13 +21,21 @@ object AppTheme {
     val TextoPrincipal = Color(0xFF1F1F1F)     // texto principal
     val TextoSecundario = Color(0xFF5F6368)   // texto secundario
 
-    val Accent = Color(0xFF1976D2)          // azul profesional
-    val Error = Color(0xFFD32F2F)
-    val Success = Color(0xFF388E3C)
+    val ButtonBackground = Color(0xFF9FBECE)
+    val ButtonContent = Color.White
+    val ButtonSecondary = Color(0xFF9DB4C0)
+
+
 
     // ───────── Tipografía ─────────
     val Title = TextStyle(
         fontSize = 22.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = TextoPrincipal
+    )
+
+    val SubTitle = TextStyle(
+        fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
         color = TextoPrincipal
     )
@@ -40,7 +52,8 @@ object AppTheme {
     )
 
     // ───────── Formas ─────────
-    val CornerRadius = RoundedCornerShape(8.dp)
+    val CornerRadius = RoundedCornerShape(10.dp)
+
 
     // ───────── Espaciados ─────────
     val PaddingS = 8.dp

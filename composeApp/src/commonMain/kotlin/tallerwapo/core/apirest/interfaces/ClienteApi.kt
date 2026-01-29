@@ -4,8 +4,9 @@ import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 
 interface ClienteApi {
-    val BUSCAR_TODOS_CLIENTES_URL: String get() = "/clientes/buscarTodosLosClientes"
+
     val CREAR_CLIENTE_URL: String get() = "/clientes/crearCliente"
+    val BUSCAR_TODOS_CLIENTE_URL: String get() = "/clientes/buscarTodosLosClientes"
     val ELIMIAR_CLIENTE_URL: String get() = "/clientes/eliminarCliente"
     val ACTUALIZAR_CLIENTE_URL: String get() = "/clientes/actualizarCliente"
 

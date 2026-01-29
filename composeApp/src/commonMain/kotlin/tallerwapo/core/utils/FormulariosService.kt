@@ -2,8 +2,7 @@ package tallerwapo.core.utils
 
 import tallerwapo.core.dominio.bo.interfaz.BaseBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
-import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
-import java.util.Objects
+import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 
 object FormulariosService {
 
@@ -13,7 +12,7 @@ object FormulariosService {
     ){
         if (respuesta.isOk) {
             MensajesEmergentes.mostrarDialogo(
-                titulo = "Todo ok",
+                titulo = "Osss",
                 mensaje = respuesta.mensaje,
                 botones = listOf(
                     MensajesEmergentes.BotonDialogo("ok") {accionCerrar() },

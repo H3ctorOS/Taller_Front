@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.emergentes
+package tallerwapo.taller_interfaz.objetos.emergentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth

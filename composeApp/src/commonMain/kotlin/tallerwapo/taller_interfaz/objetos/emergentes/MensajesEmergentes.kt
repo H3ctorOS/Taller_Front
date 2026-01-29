@@ -1,10 +1,11 @@
-package tallerwapo.taller_interfaz.emergentes
+package tallerwapo.taller_interfaz.objetos.emergentes
 
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppTheme
 
 
@@ -41,25 +42,26 @@ object MensajesEmergentes {
                 title = { Text(text = titulo, color = AppTheme.TextoPrincipal) },
                 text = { Text(text = mensaje, color = AppTheme.TextoPrincipal) },
                 confirmButton = {
+
                     // Usamos el primer botón como confirm
                     if (botones.isNotEmpty()) {
-                        Button(onClick = {
-                            botones[0].accion()
-                            dialogoActivo = false
-                        }) {
-                            Text(botones[0].texto)
-                        }
+                        AppBoton(text = botones[0].texto,
+                            onClick = {
+                                botones[0].accion()
+                                dialogoActivo = false
+                            }
+                        )
                     }
                 },
                 dismissButton = {
                     // Si hay más de un botón, el segundo se considera "cancel"
                     if (botones.size > 1) {
-                        Button(onClick = {
-                            botones[1].accion()
-                            dialogoActivo = false
-                        }) {
-                            Text(botones[1].texto)
-                        }
+
+                        AppBoton(text = botones[1].texto,
+                            onClick = {  botones[1].accion()
+                                dialogoActivo = false }
+                        )
+
                     }
                 }
             )

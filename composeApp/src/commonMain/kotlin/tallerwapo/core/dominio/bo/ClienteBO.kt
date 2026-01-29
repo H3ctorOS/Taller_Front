@@ -5,12 +5,12 @@ import tallerwapo.core.dominio.bo.interfaz.BaseBO
 
 @Serializable
 data class ClienteBO(
-    val uuid: Int,
-    val dni: String,
-    val nombre: String,
-    val apellidos: String,
-    val direccion: String,
-    val telefono: Int,
-    val email: String,
-    val estado: String
+    override val uuid: Int= 0,
+    val dni: String= "",
+    val nombre: String= "",
+    val apellidos: String= "",
+    val direccion: String= "",
+    val telefono: Int= 0,
+    val email: String= "",
+    val estado: String= "",
 ): BaseBO

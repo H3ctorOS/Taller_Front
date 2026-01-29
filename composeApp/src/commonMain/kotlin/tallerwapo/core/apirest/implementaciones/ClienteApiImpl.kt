@@ -6,7 +6,7 @@ import tallerwapo.core.apirest.interfaces.ClienteApi
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 
-class ClienteApiImpl() : ClienteApi {
+class ClienteApiImpl : ClienteApi {
 
     override suspend fun crearCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO> {
 
@@ -22,6 +22,6 @@ class ClienteApiImpl() : ClienteApi {
     }
 
     override suspend fun buscarTodosLosClientes(): RespuestaDTO<List <ClienteBO>> {
-        TODO("Not yet implemented")
+        return ApiRest.get(url = BASE_URL + BUSCAR_TODOS_CLIENTE_URL)
     }
 }

@@ -45,7 +45,7 @@ object ApiRest {
                 status = 500,
                 mensaje = e.message ?: "Error desconocido",
                 isOk = false,
-                objeto = null
+                BoRespuesta = null
             )
         }
     }
@@ -75,7 +75,7 @@ object ApiRest {
                 status = 500,
                 mensaje = e.message ?: "Error desconocido",
                 isOk = false,
-                objeto = null
+                BoRespuesta = null
             )
         }
     }

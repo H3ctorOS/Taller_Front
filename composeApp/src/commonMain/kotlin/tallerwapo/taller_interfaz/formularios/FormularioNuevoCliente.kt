@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.pantallas.formularios
+package tallerwapo.taller_interfaz.formularios
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,8 +26,8 @@ import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
-import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
-import tallerwapo.taller_interfaz.pantallas.formularios.objetos.CampoEntradaRow
+import tallerwapo.taller_interfaz.objetos.CampoEntrada.CampoEntradaRow
+import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppTheme
 @Composable
 fun FormularioNuevoCliente(
@@ -39,6 +38,8 @@ fun FormularioNuevoCliente(
     // Estados de los campos
     var nombre by remember { mutableStateOf("") }
     var apellidos by remember { mutableStateOf("") }
+    var dni by remember { mutableStateOf("") }
+    var direccion by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
 
@@ -56,10 +57,12 @@ fun FormularioNuevoCliente(
 
         Spacer(Modifier.height(AppTheme.PaddingL))
 
-        CampoEntradaRow(label = "Nombre", value = nombre, onValueChange = { nombre = it })
-        CampoEntradaRow(label = "Apellidos", value = apellidos, onValueChange = { apellidos = it })
-        CampoEntradaRow(label = "Email", value = email, onValueChange = { email = it })
-        CampoEntradaRow(label = "Teléfono", value = telefono, onValueChange = { telefono = it })
+        CampoEntradaRow(titulo = "Nombre", valor = nombre, onValueChange = { nombre = it })
+        CampoEntradaRow(titulo = "Apellidos", valor = apellidos, onValueChange = { apellidos = it })
+        CampoEntradaRow(titulo = "Dni", valor = dni, onValueChange = { dni = it })
+        CampoEntradaRow(titulo = "Direccion", valor = direccion, onValueChange = { direccion = it })
+        CampoEntradaRow(titulo = "Email", valor = email, onValueChange = { email = it })
+        CampoEntradaRow(titulo = "Teléfono", valor = telefono, onValueChange = { telefono = it })
 
         Spacer(modifier = Modifier.height(AppTheme.PaddingL))
 
@@ -67,37 +70,38 @@ fun FormularioNuevoCliente(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Button(onClick = onCerrar) {
-                Text("Cancelar")
-            }
+
+
+            AppBoton(text = "Cancelar",
+                onClick = { onCerrar() }
+            )
 
             Spacer(modifier = Modifier.width(AppTheme.PaddingM))
 
-            Button(onClick = {
-                var respuesta: RespuestaDTO<ClienteBO>
+            AppBoton( text = "Guardar",
+                onClick = { var respuesta: RespuestaDTO<ClienteBO>
 
-                // Guardar cliente desde dentro del formulario
-                CoroutineScope(Dispatchers.IO).launch {
-                    val cliente = ClienteBO(
-                        uuid = 0,
-                        nombre = nombre,
-                        apellidos = apellidos,
-                        dni = "dfg",
-                        direccion = "dfg",
-                        telefono = telefono.toIntOrNull() ?: 0,
-                        email = email,
-                        estado = ""
-                    )
+                    // Guardar cliente desde dentro del formulario
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val cliente = ClienteBO(
+                            uuid = 0,
+                            nombre = nombre,
+                            apellidos = apellidos,
+                            dni = dni,
+                            direccion = direccion,
+                            telefono = telefono.toIntOrNull() ?: 0,
+                            email = email,
+                            estado = ""
+                        )
 
-                    Logs.info(this, "Creando nuevo cliente")
+                        Logs.info(this, "Creando nuevo cliente")
 
-                    val respuesta = clientesApi.crearCliente(cliente)
+                        val respuesta = clientesApi.crearCliente(cliente)
+                        FormulariosService.gestionarRespuestaApi(respuesta){ onCerrar() }
+                    }
+                })
 
-                    FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
 
-                }
-
-            }){ Text("Guardar") }
         }
     }
 }

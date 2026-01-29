@@ -51,10 +51,7 @@ class PrincipalScreen : Screen {
 
                     // Contenido derecho con scroll
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
+                        modifier = Modifier.fillMaxSize()) {
 
                         // Contenedor para el contenido principal
                         Box(

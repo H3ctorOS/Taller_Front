@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import tallerwapo.taller_interfaz.emergentes.MensajesEmergentes
+import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.pantallas.principal.PrincipalScreen
 
 @Composable

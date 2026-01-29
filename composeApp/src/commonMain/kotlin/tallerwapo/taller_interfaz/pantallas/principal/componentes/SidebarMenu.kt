@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import tallerwapo.taller_interfaz.pantallas.clientes.ClientesScreen
 import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
 import tallerwapo.taller_interfaz.themes.AppTheme
 
@@ -24,9 +25,11 @@ fun AppSidebar(
             .padding(AppTheme.PaddingM)
     ) {
         Text("TallerWapo", style = AppTheme.Title)
+
         Spacer(Modifier.height(AppTheme.PaddingL))
 
         SidebarItem("Pantalla de pruebas") { onScreenSelected(PruebasScreen()) }
+        SidebarItem("Clientes") { onScreenSelected(ClientesScreen()) }
 
     }
 }
