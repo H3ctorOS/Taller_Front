@@ -10,10 +10,11 @@ import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.formularios.FormularioNuevoCliente
+import tallerwapo.taller_interfaz.formularios.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.formularios.FormulatioModificarCliente
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
-import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.pantallas.clientes.componentes.ClientesPanelinfo
 import tallerwapo.taller_interfaz.objetos.listables.listas.ListaClientes
 import tallerwapo.taller_interfaz.objetos.listables.listas.ListaVehiculos
@@ -29,12 +30,12 @@ class ClientesScreen : Screen {
 
         // --- Estado de la pantalla ---
         var mostrarFormularioEditarCliente by remember { mutableStateOf(false) }
+        var mostrarFormularioNueloCliente by remember { mutableStateOf(false) }
+        var mostrarFormularioNuevoVehiculo by remember { mutableStateOf(false) }
         var clienteSeleccionado by remember { mutableStateOf<ClienteBO?>(null) }
         var listaClientes by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
 
-        var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(listOf(
-            VehiculoBO(1, 1, "Toyota", "Corolla"),
-        )) }
+        var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
 
 
         var vehiculoSeleccionado by remember { mutableStateOf<VehiculoBO?>(null) }
@@ -84,16 +85,22 @@ class ClientesScreen : Screen {
             ListaClientes(
                 clientes = listaClientes,
                 clienteSeleccionado = clienteSeleccionado,
-                onClienteSeleccionado = { clienteSeleccionado = it
-                        scope.launch {
-                            actualizarListaVehiculos(it)
-                        }
-                    },
+                onClienteSeleccionado = {
+                    clienteSeleccionado = it
+                    scope.launch {
+                        actualizarListaVehiculos(it)
+                    }
+                },
                 onClienteDoubleClick = { cliente ->
                     clienteSeleccionado = cliente
                     mostrarFormularioEditarCliente = true
                 },
-                modifier = Modifier.width(300.dp).fillMaxHeight()
+                modifier = Modifier.width(300.dp).fillMaxHeight(),
+                onNewClick = {
+                    mostrarFormularioNueloCliente = true
+                },
+                mostrarNew = true
+
             )
 
             // --- Columna derecha ---
@@ -114,7 +121,10 @@ class ClientesScreen : Screen {
                             onVehiculoDoubleClick = { vehiculo ->
                                 vehiculoSeleccionado = vehiculo
                              },
-                            modifier = Modifier.width(300.dp).fillMaxHeight()
+                            modifier = Modifier.width(300.dp).fillMaxHeight(),
+                            mostrarNew = true,
+                            onNewClick = {mostrarFormularioNuevoVehiculo = true}
+
                         )
 
                     }
@@ -156,5 +166,28 @@ class ClientesScreen : Screen {
                 )
             }
         }
+
+        // --- Formulario emergente nuevo cliente ---
+        FormularioEmergente(
+            mostrar = mostrarFormularioNueloCliente,
+            onCerrar = { mostrarFormularioNueloCliente = false }
+        ) {
+            FormularioNuevoCliente(
+                onCerrar = { mostrarFormularioNueloCliente = false }
+            )
+        }
+
+
+        // --- Formulario emergente nuevo vehiculo---
+        FormularioEmergente(
+            mostrar = mostrarFormularioNuevoVehiculo,
+            onCerrar = { mostrarFormularioNuevoVehiculo = false }
+        ) {
+            FormularioNuevoVehiculo(
+                clientePropietario = clienteSeleccionado,
+                onCerrar = { mostrarFormularioNuevoVehiculo = false }
+            )
+        }
+
     }
 }

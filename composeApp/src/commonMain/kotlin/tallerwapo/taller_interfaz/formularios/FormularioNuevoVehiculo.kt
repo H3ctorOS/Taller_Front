@@ -21,6 +21,7 @@ import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 @Composable
 fun FormularioNuevoVehiculo(
+    clientePropietario: ClienteBO? = null,
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
@@ -31,7 +32,7 @@ fun FormularioNuevoVehiculo(
     var listaPropietarios by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
 
 
-    var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(null) }
+    var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(clientePropietario) }
     var matricula by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
@@ -40,8 +41,10 @@ fun FormularioNuevoVehiculo(
 
     // ───────── Cargar propietarios ─────────
     LaunchedEffect(Unit) {
-        val listaRecibida = ApiContexto.clientesRepo.buscarTodosLosClientes()
-        if (listaRecibida != null) listaPropietarios = listaRecibida
+        if (clientePropietario == null) {
+            val listaRecibida = ApiContexto.clientesRepo.buscarTodosLosClientes()
+            if (listaRecibida != null) listaPropietarios = listaRecibida
+        }
     }
 
 
@@ -66,13 +69,22 @@ fun FormularioNuevoVehiculo(
             Spacer(Modifier.height(theme.paddingL))
 
             // ───────── PROPIETARIO (Seleccionable) ─────────
-            SeleccionableRow(
-                titulo = "Propietario",
-                items = listaPropietarios,
-                seleccionado = propietarioSeleccionado,
-                onSeleccionChange = { propietarioSeleccionado = it },
-                labelProvider = { it.nombre }
-            )
+            if (clientePropietario == null) {
+                SeleccionableRow(
+                    titulo = "Propietario",
+                    items = listaPropietarios,
+                    seleccionado = propietarioSeleccionado,
+                    onSeleccionChange = { propietarioSeleccionado = it },
+                    labelProvider = { it.nombre }
+                )
+            } else {
+                CampoEntradaRow(
+                    titulo = "Propietario",
+                    valor = clientePropietario.nombre,
+                    onValueChange = {},
+                    enabled = false
+                )
+            }
 
             CampoEntradaRow(
                 titulo = "Matrícula",
@@ -126,7 +138,8 @@ fun FormularioNuevoVehiculo(
                             val respuesta = vehiculosRepo.crearVehiculo(vehiculo)
                             FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
                         }
-                    })
+                    }
+                )
 
             }
         }

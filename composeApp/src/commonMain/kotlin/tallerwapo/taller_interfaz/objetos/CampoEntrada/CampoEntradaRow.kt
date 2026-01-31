@@ -15,7 +15,8 @@ fun CampoEntradaRow(
     titulo: String,
     valor: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
@@ -47,7 +48,8 @@ fun CampoEntradaRow(
                 unfocusedContainerColor = theme.inputBackgroundColor,
                 disabledContainerColor = theme.inputBackgroundColor,
             ),
-            shape = theme.cornerRadius
+            shape = theme.cornerRadius,
+            enabled = enabled
         )
 
     }

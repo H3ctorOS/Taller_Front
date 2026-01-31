@@ -2,9 +2,11 @@ package tallerwapo.taller_interfaz.objetos.listables.listas
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.objetos.botones.MasBoton
 import tallerwapo.taller_interfaz.objetos.listables.ListableBOList
 import tallerwapo.taller_interfaz.objetos.listables.items.ClientesListItem
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
@@ -16,24 +18,28 @@ fun ListaClientes(
     clienteSeleccionado: ClienteBO?,
     onClienteSeleccionado: (ClienteBO) -> Unit,
     onClienteDoubleClick: ((ClienteBO) -> Unit)? = null,
+    onNewClick: () -> Unit,
+    mostrarNew: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
     Box(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(theme.paddingM)
-        ) {
-            AppTextos(text = "Clientes", style = theme.title)
+        Column{
+            Row (
+                verticalAlignment = Alignment.Bottom   //alinea hijos abajo
+            ){
+                AppTextos(text = "Clientes", style = theme.title,modifier = Modifier.alignByBaseline() )
+                Spacer(Modifier.width(theme.paddingS))
+                if (mostrarNew) { MasBoton(onClick = { onNewClick() }, modifier = Modifier.alignByBaseline()) }
+            }
 
             ListableBOList(
                 items = clientes.map { ClientesListItem(it) },
                 selectedItemId = clienteSeleccionado?.uuid,
                 onItemClick = onClienteSeleccionado,
                 onItemDoubleClick = onClienteDoubleClick,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().weight(1F)
             )
         }
     }
