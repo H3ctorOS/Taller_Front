@@ -11,6 +11,7 @@ interface ClienteApi {
     val ACTUALIZAR_CLIENTE_URL: String get() = "/clientes/actualizarCliente"
 
     suspend fun crearCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
-    suspend fun eliminarCliente(clienteId: ClienteBO): RespuestaDTO<ClienteBO>
+    suspend fun eliminarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
     suspend fun buscarTodosLosClientes(): RespuestaDTO<List <ClienteBO>>
+    suspend fun actualizarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
 }

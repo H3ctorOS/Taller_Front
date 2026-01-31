@@ -6,8 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import tallerwapo.taller_interfaz.objetos.CampoEntrada.CampoEntradaRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,39 +14,64 @@ import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
+import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.objetos.CampoEntrada.SeleccionableRow
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 @Composable
 fun FormularioNuevoVehiculo(
     onCerrar: () -> Unit
 ) {
-    val vehiculosApi = ApiContexto.vehiculosApi
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
+
+    val vehiculosRepo = ApiContexto.vehiculosRepo
     val scope = rememberCoroutineScope()
 
-    var propietario by remember { mutableStateOf("") }
+    var listaPropietarios by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
+
+
+    var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(null) }
     var matricula by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
     var observaciones by remember { mutableStateOf("") }
 
+
+    // ───────── Cargar propietarios ─────────
+    LaunchedEffect(Unit) {
+        val listaRecibida = ApiContexto.clientesRepo.buscarTodosLosClientes()
+        if (listaRecibida != null) listaPropietarios = listaRecibida
+    }
+
+
+    // ───────── Validación del formulario ─────────
+    fun formularioEsValido(): Boolean {
+        return propietarioSeleccionado != null &&
+                matricula.isNotBlank()
+    }
+
+
         Column(
             modifier = Modifier
                 .widthIn(max = 900.dp)
-                .background(AppTheme.Surface, AppTheme.CornerRadius)
-                .padding(AppTheme.PaddingM)
+                .background(theme.surfaceColor, theme.cornerRadius)
+                .padding(theme.paddingM)
         ) {
             Text(
                 text = "Nuevo vehículo",
-                style = AppTheme.Title
+                style = theme.title
             )
 
-            Spacer(Modifier.height(AppTheme.PaddingL))
+            Spacer(Modifier.height(theme.paddingL))
 
-            CampoEntradaRow(
+            // ───────── PROPIETARIO (Seleccionable) ─────────
+            SeleccionableRow(
                 titulo = "Propietario",
-                valor = propietario,
-                onValueChange = { propietario = it }
+                items = listaPropietarios,
+                seleccionado = propietarioSeleccionado,
+                onSeleccionChange = { propietarioSeleccionado = it },
+                labelProvider = { it.nombre }
             )
 
             CampoEntradaRow(
@@ -75,7 +98,7 @@ fun FormularioNuevoVehiculo(
                 onValueChange = { observaciones = it }
             )
 
-            Spacer(Modifier.height(AppTheme.PaddingL))
+            Spacer(Modifier.height(theme.paddingL))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -85,28 +108,28 @@ fun FormularioNuevoVehiculo(
                 AppBoton(text = "Cancelar",
                     onClick = { onCerrar()})
 
-                Spacer(Modifier.width(AppTheme.PaddingM))
+                Spacer(Modifier.width(theme.paddingM))
 
-                AppBoton( text = "Guardar",
+                AppBoton( text = "Guardar", enabled = formularioEsValido(),
                     onClick = {
                         scope.launch(Dispatchers.IO) {
                             val vehiculo = VehiculoBO(
                                 uuid = 0,
-                                uuidPropietario = 1,
+                                uuidPropietario = propietarioSeleccionado!!.uuid,
                                 matricula = matricula,
                                 marca = marca,
-                                modelo = modelo,
-                                codigoEstado = "activo"
+                                modelo = modelo
                             )
 
                             Logs.info(this, "Creando nuevo vehículo")
 
-                            val respuesta = vehiculosApi.crearVehiculo(vehiculo)
+                            val respuesta = vehiculosRepo.crearVehiculo(vehiculo)
                             FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
                         }
                     })
 
             }
         }
+
     }
 

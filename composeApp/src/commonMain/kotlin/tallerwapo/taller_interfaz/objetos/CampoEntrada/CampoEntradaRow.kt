@@ -1,14 +1,14 @@
 package tallerwapo.taller_interfaz.objetos.CampoEntrada
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 @Composable
 fun CampoEntradaRow(
@@ -17,19 +17,22 @@ fun CampoEntradaRow(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
+
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = AppTheme.PaddingS)
+            .padding(vertical = theme.paddingS)
     ) {
 
         // ───────── Etiqueta ─────────
         AppTextos(
             text = titulo,
-            style = AppTheme.Body
+            style = theme.bodyText
         )
 
-        Spacer(Modifier.height(AppTheme.PaddingS))
+        Spacer(Modifier.height(theme.paddingS))
 
         // ───────── Campo de entrada ─────────
         TextField(
@@ -37,14 +40,14 @@ fun CampoEntradaRow(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth(),
-            textStyle = AppTheme.Input,
+            textStyle = theme.input,
             singleLine = true,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = AppTheme.InputBackground,
-                unfocusedContainerColor = AppTheme.InputBackground,
-                disabledContainerColor = AppTheme.InputBackground,
+                focusedContainerColor = theme.inputBackgroundColor,
+                unfocusedContainerColor = theme.inputBackgroundColor,
+                disabledContainerColor = theme.inputBackgroundColor,
             ),
-            shape = AppTheme.CornerRadius
+            shape = theme.cornerRadius
         )
 
     }

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,17 +15,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.AppSidebar
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.BarraInferior
 import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 
 class PrincipalScreen : Screen {
 
     @Composable
     override fun Content() {
-
+        val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
         // Estado de la pantalla derecha
         var currentScreen by remember { mutableStateOf<Screen>(PruebasScreen()) }
 
@@ -36,7 +35,7 @@ class PrincipalScreen : Screen {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(AppTheme.Background)
+                    .background(theme.backgroundColor)
             ) {
 
                 // Contenido principal con sidebar y contenido derecho
@@ -57,7 +56,7 @@ class PrincipalScreen : Screen {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(AppTheme.Surface, AppTheme.CornerRadius)
+                                .background(theme.backgroundColor, theme.cornerRadius)
                         ) {
                             currentScreen.Content()
                         }

@@ -9,23 +9,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 
 object BarraInferior {
-
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     @Composable
     fun Contenido() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp)
-                .background(AppTheme.Surface),
+                .background(theme.surfaceColor),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Barra de estado",
-                style = AppTheme.Body
+                style = theme.bodyText
             )
         }
     }

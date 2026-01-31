@@ -6,7 +6,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 
 @Composable
@@ -16,25 +17,27 @@ onClick: () -> Unit,
 modifier: Modifier = Modifier,
 enabled: Boolean = true
 ) {
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
+
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        shape = AppTheme.CornerRadius,
+        shape = theme.cornerRadius,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppTheme.ButtonBackground,
-            contentColor = AppTheme.ButtonContent,
-            disabledContainerColor = AppTheme.ButtonSecondary,
-            disabledContentColor = AppTheme.ButtonContent
+            containerColor = theme.buttonBackground,
+            contentColor = theme.buttonContent,
+            disabledContainerColor = theme.buttonSecondary,
+            disabledContentColor = theme.buttonContent
         ),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(
-            horizontal = AppTheme.PaddingM,
-            vertical = AppTheme.PaddingS
+            horizontal = theme.paddingM,
+            vertical = theme.paddingS
         )
     ) {
         Text(
             text = text,
-            style = AppTheme.Body
+            style = theme.botonText,
         )
     }
 }

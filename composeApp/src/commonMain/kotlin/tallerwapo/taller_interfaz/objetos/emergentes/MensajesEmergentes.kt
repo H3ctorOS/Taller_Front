@@ -2,14 +2,15 @@ package tallerwapo.taller_interfaz.objetos.emergentes
 
 
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 
 object MensajesEmergentes {
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
     private var dialogoActivo by mutableStateOf(false)
     private var titulo by mutableStateOf("")
@@ -39,8 +40,8 @@ object MensajesEmergentes {
         if (dialogoActivo) {
             AlertDialog(
                 onDismissRequest = { /* no cerrar tocando fuera */ },
-                title = { Text(text = titulo, color = AppTheme.TextoPrincipal) },
-                text = { Text(text = mensaje, color = AppTheme.TextoPrincipal) },
+                title = { Text(text = titulo, color = theme.textoPrincipalColor) },
+                text = { Text(text = mensaje, color = theme.textoPrincipalColor) },
                 confirmButton = {
 
                     // Usamos el primer botón como confirm

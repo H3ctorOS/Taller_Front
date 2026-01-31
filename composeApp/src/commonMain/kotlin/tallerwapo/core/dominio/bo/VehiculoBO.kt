@@ -10,5 +10,5 @@ data class VehiculoBO(
     var matricula: String = "",
     var marca: String = "",
     var modelo: String = "",
-    var codigoEstado: String = ""
+    var estado: String = "",
 ): BaseBO

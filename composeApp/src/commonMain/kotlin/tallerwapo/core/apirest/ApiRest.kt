@@ -51,26 +51,32 @@ object ApiRest {
     }
 
     // --------------------
-    // GET genérico
+    // GET genérico con parámetros
     // --------------------
     suspend inline fun <reified T : Any> get(
-        url: String
+        url: String,
+        params: Map<String, Any?> = emptyMap()
     ): RespuestaDTO<T> {
-        Logs.info(this,"GET -> $url")
+
+        val query = params.entries.joinToString("&") { "${it.key}=${it.value}" }
+        Logs.info(this, "GET -> $url?$query")
 
         return try {
             val response = httpClient.request(url) {
                 method = HttpMethod.Get
+                url {
+                    params.forEach { (key, value) ->
+                        value?.let { parameters.append(key, it.toString()) }
+                    }
+                }
             }
 
             val result: RespuestaDTO<T> = response.body()
-
-            Logs.debug(this,"Respuesta: $result")
-
+            Logs.debug(this, "Respuesta: $result")
             result
 
         } catch (e: Exception) {
-            Logs.error(this,"Error en GET $url: ${e.message}")
+            Logs.error(this, "Error en GET $url: ${e.message}")
             RespuestaDTO(
                 status = 500,
                 mensaje = e.message ?: "Error desconocido",
@@ -79,4 +85,7 @@ object ApiRest {
             )
         }
     }
+
+
+
 }

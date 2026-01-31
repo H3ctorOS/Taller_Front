@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.core.dominio.bo.VehiculoBO
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
@@ -23,12 +24,15 @@ import tallerwapo.taller_interfaz.objetos.listables.items.VehiculoListItem
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoCliente
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoVehiculo
-import tallerwapo.taller_interfaz.themes.AppTheme
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 class PruebasScreen : Screen {
+    val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
     @Composable
     override fun Content() {
+
+        var vehiculoSelecccionado by remember { mutableStateOf<VehiculoBO?>(null) }
 
         var mostrarCliente by remember { mutableStateOf(false) }
         var mostrarNuevoVehiculo by remember { mutableStateOf(false) }
@@ -38,10 +42,6 @@ class PruebasScreen : Screen {
         val vehiculos = remember {
             listOf(
                 VehiculoBO(1, 1, "Toyota", "Corolla"),
-                VehiculoBO(2, 2, "Singapore", "Corolla"),
-                VehiculoBO(3, 3, "Singapore", "Corolla"),
-                VehiculoBO(4, 4, "Singapore", "Corolla"),
-
             )
         }
 
@@ -53,12 +53,12 @@ class PruebasScreen : Screen {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(AppTheme.PaddingM)
+                .padding(theme.paddingM)
         ) {
 
             AppTextos(
                 text = "Pantalla de pruebas",
-                style = AppTheme.Title
+                style = theme.title
             )
 
             AppBoton(
@@ -83,9 +83,8 @@ class PruebasScreen : Screen {
             ) {
                 ListableBOList(
                     items = vehiculoItems,
-                    onItemClick = { vehiculo ->
-                        println("Click en vehículo: ${vehiculo.matricula}")
-                    },
+                    selectedItemId = vehiculoSelecccionado?.uuid,
+                    onItemClick = { vehiculo -> println("Click en vehículo: ${vehiculo.matricula}") },
                     modifier = Modifier.fillMaxSize()
                 )
             }
