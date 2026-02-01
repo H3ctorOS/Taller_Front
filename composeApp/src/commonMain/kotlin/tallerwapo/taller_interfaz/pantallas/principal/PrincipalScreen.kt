@@ -31,19 +31,8 @@ class PrincipalScreen : Screen {
         var currentScreen by remember { mutableStateOf<Screen>(PruebasScreen()) }
 
         Box(Modifier.fillMaxSize().defaultMinSize(minHeight = 2000.dp, minWidth = 2000.dp)) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(theme.backgroundColor)
-            ) {
-
-                // Contenido principal con sidebar y contenido derecho
-                Row(
-                    modifier = Modifier
-                        .weight(1f) // ocupa todo el espacio restante dejando espacio para la barra inferior
-                        .fillMaxWidth()
-                ) {
+            Column(modifier = Modifier.fillMaxSize().background(theme.backgroundColor)) {
+                Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
 
                     // Sidebar fijo
                     AppSidebar { screen -> currentScreen = screen }
