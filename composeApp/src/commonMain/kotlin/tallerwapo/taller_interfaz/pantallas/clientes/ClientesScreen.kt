@@ -10,10 +10,10 @@ import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.formularios.FormularioModificarCliente
 import tallerwapo.taller_interfaz.formularios.FormularioModificarVehiculo
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoCliente
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoVehiculo
-import tallerwapo.taller_interfaz.formularios.FormulatioModificarCliente
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.pantallas.clientes.componentes.ClientesPanelinfo
@@ -146,7 +146,7 @@ class ClientesScreen : Screen {
             }
         ) {
             clienteSeleccionado?.let { cliente ->
-                FormulatioModificarCliente(
+                FormularioModificarCliente(
                     cliente,
                     onCerrar = {
                         mostrarFormularioEditarCliente = false

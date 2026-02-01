@@ -13,4 +13,5 @@ data class ClienteBO(
     val telefono: Int= 0,
     val email: String= "",
     val estado: String= "",
+    val observaciones: String= ""
 ): BaseBO

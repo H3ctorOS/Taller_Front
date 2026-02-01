@@ -67,8 +67,8 @@ fun ListableBOCard(
                     lastClickTime = currentTime
                 }
             }
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
+        ,horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
         Spacer(Modifier.height(theme.paddingS))
 

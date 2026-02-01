@@ -32,23 +32,15 @@ class PrincipalScreen : Screen {
 
         Box(Modifier.fillMaxSize().defaultMinSize(minHeight = 2000.dp, minWidth = 2000.dp)) {
             Column(modifier = Modifier.fillMaxSize().background(theme.backgroundColor)) {
+
                 Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
 
-                    // Sidebar fijo
+                    // Izquierda Sidebar fijo
                     AppSidebar { screen -> currentScreen = screen }
 
-                    // Contenido derecho con scroll
-                    Column(
-                        modifier = Modifier.fillMaxSize()) {
-
-                        // Contenedor para el contenido principal
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(theme.backgroundColor, theme.cornerRadius)
-                        ) {
-                            currentScreen.Content()
-                        }
+                    // Contenido derecho
+                    Column(modifier = Modifier.fillMaxSize().background(theme.backgroundColor)) {
+                        currentScreen.Content()
                     }
                 }
 
