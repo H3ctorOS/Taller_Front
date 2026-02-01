@@ -168,7 +168,13 @@ class ClientesScreen : Screen {
             onCerrar = { mostrarFormularioNueloCliente = false }
         ) {
             FormularioNuevoCliente(
-                onCerrar = { mostrarFormularioNueloCliente = false }
+                onCerrar = { mostrarFormularioNueloCliente = false
+                    scope.launch {
+                        val idSeleccionado = clienteSeleccionado?.uuid
+                        actualizarListaClientes()
+                        clienteSeleccionado = listaClientes.find { it.uuid == idSeleccionado }
+                    }
+                }
             )
         }
 

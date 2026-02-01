@@ -11,10 +11,14 @@ object HttpClientProvider {
 
     val httpCliente = HttpClient {
         install(ContentNegotiation){
-                json(json = Json{ignoreUnknownKeys = true
-                    encodeDefaults = true  // esto fuerza a serializar valores por defecto, incluyendo null
-                    explicitNulls = true    // esto fuerza a serializar nulls
-                }, contentType = ContentType.Any)
+                json(
+                    json = Json{
+                        ignoreUnknownKeys = true
+                        encodeDefaults = true  // esto fuerza a serializar valores por defecto, incluyendo null
+                        explicitNulls = false    // esto fuerza a serializar nulls
+                    },
+                    contentType = ContentType.Any
+                )
         }
     }
 }
