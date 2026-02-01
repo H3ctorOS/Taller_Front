@@ -10,6 +10,7 @@ import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.formularios.FormularioModificarVehiculo
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoCliente
 import tallerwapo.taller_interfaz.formularios.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.formularios.FormulatioModificarCliente
@@ -28,16 +29,16 @@ class ClientesScreen : Screen {
 
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
-        // --- Estado de la pantalla ---
+        // --- Formularios ---
+        var mostrarFormularioEditarVehiculo by remember { mutableStateOf(false) }
         var mostrarFormularioEditarCliente by remember { mutableStateOf(false) }
         var mostrarFormularioNueloCliente by remember { mutableStateOf(false) }
         var mostrarFormularioNuevoVehiculo by remember { mutableStateOf(false) }
+
+        // --- Estados ---
         var clienteSeleccionado by remember { mutableStateOf<ClienteBO?>(null) }
         var listaClientes by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
-
         var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
-
-
         var vehiculoSeleccionado by remember { mutableStateOf<VehiculoBO?>(null) }
 
 
@@ -60,7 +61,7 @@ class ClientesScreen : Screen {
         suspend fun actualizarListaVehiculos(cliente: ClienteBO) {
             try {
                 val recibida = ApiContexto.vehiculosRepo.buscarPorCliente(cliente)
-                if (recibida != null) listaVehiculos = recibida
+                if (recibida?.BoRespuesta != null) listaVehiculos = recibida.BoRespuesta
 
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
@@ -95,7 +96,7 @@ class ClientesScreen : Screen {
                     clienteSeleccionado = cliente
                     mostrarFormularioEditarCliente = true
                 },
-                modifier = Modifier.width(300.dp).fillMaxHeight(),
+                modifier = Modifier.width(200.dp).fillMaxHeight(),
                 onNewClick = {
                     mostrarFormularioNueloCliente = true
                 },
@@ -103,33 +104,26 @@ class ClientesScreen : Screen {
 
             )
 
+
             // --- Columna derecha ---
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .padding(theme.paddingM)
-            ) {
+            Column(modifier = Modifier.fillMaxHeight().weight(1f)) {
 
                 // Lista de coches del cliente seleccionado
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        ListaVehiculos(
-                            vehiculos = listaVehiculos,
-                            vehiculoSeleccionado = vehiculoSeleccionado,
-                            onVehiculoSeleccionado = { vehiculoSeleccionado = it },
-                            onVehiculoDoubleClick = { vehiculo ->
-                                vehiculoSeleccionado = vehiculo
-                             },
-                            modifier = Modifier.width(300.dp).fillMaxHeight(),
-                            mostrarNew = true,
-                            onNewClick = {mostrarFormularioNuevoVehiculo = true}
-
-                        )
-
-                    }
-
+                Column() {
+                    ListaVehiculos(
+                        vehiculos = listaVehiculos,
+                        vehiculoSeleccionado = vehiculoSeleccionado,
+                        onVehiculoSeleccionado = { vehiculoSeleccionado = it },
+                        onVehiculoDoubleClick = { vehiculo ->
+                            vehiculoSeleccionado = vehiculo
+                            mostrarFormularioEditarVehiculo = true
+                         },
+                        modifier = Modifier.width(200.dp),
+                        mostrarNew = true,
+                        onNewClick = {mostrarFormularioNuevoVehiculo = true}
+                    )
                 }
+
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -142,6 +136,7 @@ class ClientesScreen : Screen {
                 )
             }
         }
+
 
         // --- Formulario emergente para editar cliente ---
         FormularioEmergente(
@@ -187,6 +182,27 @@ class ClientesScreen : Screen {
                 clientePropietario = clienteSeleccionado,
                 onCerrar = { mostrarFormularioNuevoVehiculo = false }
             )
+        }
+
+
+        // --- Formulario emergente para editar vehiculo ---
+        FormularioEmergente(
+            mostrar = mostrarFormularioEditarVehiculo,
+            onCerrar = { mostrarFormularioEditarVehiculo = false }
+        ) {
+            vehiculoSeleccionado?.let { vehiculo ->
+                FormularioModificarVehiculo(clienteSeleccionado,
+                    vehiculo,
+                    onCerrar = {
+                        mostrarFormularioEditarVehiculo = false
+
+                        // 🔹 Actualizar lista usando el scope
+                        scope.launch {
+                            clienteSeleccionado?.let{actualizarListaVehiculos(clienteSeleccionado!!)}
+                        }
+                    }
+                )
+            }
         }
 
     }

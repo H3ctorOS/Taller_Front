@@ -10,7 +10,6 @@ import tallerwapo.core.dominio.bo.ClienteBO
 class VehiculoApiImpl(): VehiculosApi {
 
     override suspend fun crearVehiculo(vehiculo: VehiculoBO): RespuestaDTO<VehiculoBO>  {
-
         return ApiRest.post(
             url = BASE_URL + CREAR_VEHICULO_URL,
             body = vehiculo
@@ -18,24 +17,34 @@ class VehiculoApiImpl(): VehiculosApi {
     }
 
     override suspend fun eliminareVhiculo(vehiculo: VehiculoBO): RespuestaDTO<VehiculoBO> {
-        TODO("Not yet implemented")
+        return ApiRest.post(
+            url = BASE_URL + ELIMIAR_VEHICULO_URL,
+            body = vehiculo
+        )
     }
 
     override suspend fun actualizarVehiculo(vehiculo: VehiculoBO): RespuestaDTO<VehiculoBO>  {
-        TODO("Not yet implemented")
+        return ApiRest.post(
+            url = BASE_URL + ACTUALIZAR_VEHICULO_URL,
+            body = vehiculo
+        )
     }
 
     override suspend fun buscarPorMatricula(matricula: String): RespuestaDTO<VehiculoBO>  {
-        TODO("Not yet implemented")
+        return ApiRest.get(
+            url = BASE_URL + BUSCAR_VEHICULO_MATRICULA_URL
+            ,params = mapOf(
+                "matricula" to matricula
+            )
+        )
     }
 
     override suspend fun buscarPorCliente(cliente: ClienteBO):  RespuestaDTO<List <VehiculoBO>> {
-
-        return ApiRest.get(url = BASE_URL + BUSCAR_VEHICULOS_CLIENTE_URL
-                            ,params = mapOf(
-                                    "clienteUuid" to cliente.uuid
-                            )
+        return ApiRest.get(
+            url = BASE_URL + BUSCAR_VEHICULOS_CLIENTE_URL
+            ,params = mapOf(
+                    "clienteUuid" to cliente.uuid
+            )
         )
-
     }
 }

@@ -13,7 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.listables.interfaz.ListableBO
@@ -65,8 +67,11 @@ fun ListableBOCard(
                     lastClickTime = currentTime
                 }
             }
-            .padding(theme.paddingM)
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(Modifier.height(theme.paddingS))
+
         AppTextos(text = item.titulo, style = theme.subTitleText)
 
         item.subtitulo?.let {
@@ -78,5 +83,7 @@ fun ListableBOCard(
             Spacer(Modifier.height(theme.paddingS))
             AppTextos(text = it, style = theme.bodyText)
         }
+
+        Spacer(Modifier.height(theme.paddingS))
     }
 }

@@ -16,12 +16,28 @@ class VehiculosRepositorio  (
         return  apiRest.crearVehiculo(vehiculo)
     }
 
+    suspend fun modificarVehiculo(vehiculo : VehiculoBO) : RespuestaDTO <VehiculoBO>{
+        Logs.info(this, "Enviando request para mopdificar vehículo")
+        return  apiRest.actualizarVehiculo(vehiculo)
+    }
 
-    suspend fun buscarPorCliente(cliente : ClienteBO) : List<VehiculoBO>? {
+    suspend fun eliminarVehiculo(vehiculo : VehiculoBO) : RespuestaDTO <VehiculoBO>{
+        Logs.info(this, "Enviando request para eliminar vehículo")
+        return  apiRest.eliminareVhiculo(vehiculo)
+    }
 
+
+    suspend fun buscarPorCliente(cliente : ClienteBO) : RespuestaDTO <List<VehiculoBO>>? {
         //llamar al servidor por api
         var respuesta : RespuestaDTO<List <VehiculoBO>> = apiRest.buscarPorCliente(cliente)
-        return respuesta.BoRespuesta;
+        return respuesta;
     }
+
+    suspend fun buscarPorMatricula(matricula: String) : RespuestaDTO <VehiculoBO> {
+        //llamar al servidor por api
+        var respuesta : RespuestaDTO<VehiculoBO> = apiRest.buscarPorMatricula(matricula)
+        return respuesta
+    }
+
 
 }

@@ -38,8 +38,7 @@ fun ListaVehiculos(
                 items = vehiculos.map { VehiculoListItem(it) },
                 selectedItemId = vehiculoSeleccionado?.uuid,
                 onItemClick = onVehiculoSeleccionado,
-                onItemDoubleClick = onVehiculoDoubleClick,
-                modifier = Modifier.fillMaxSize()
+                onItemDoubleClick = onVehiculoDoubleClick
             )
         }
     }
