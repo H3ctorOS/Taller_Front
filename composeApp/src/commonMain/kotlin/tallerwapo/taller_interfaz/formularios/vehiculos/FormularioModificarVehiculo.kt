@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.formularios
+package tallerwapo.taller_interfaz.formularios.vehiculos
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
-import tallerwapo.taller_interfaz.objetos.CampoEntrada.CampoEntradaRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.ApiContexto
@@ -17,7 +17,7 @@ import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.InterfazContext
-import tallerwapo.taller_interfaz.objetos.CampoEntrada.SeleccionableRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.SeleccionableRow
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 

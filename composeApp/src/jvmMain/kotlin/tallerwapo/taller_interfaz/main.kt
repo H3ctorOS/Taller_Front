@@ -11,7 +11,7 @@ fun main() = application {
         title = "TALLER WAPO !!!",
         state = rememberWindowState(
             width = 2000.dp,
-            height = 1000.dp
+            height = 1300.dp
         )
     ) {
         App()

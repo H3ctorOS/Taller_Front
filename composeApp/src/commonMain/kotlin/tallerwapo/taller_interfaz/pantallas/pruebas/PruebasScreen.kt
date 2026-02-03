@@ -16,14 +16,15 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.objetos.listables.ListableBOList
 import tallerwapo.taller_interfaz.objetos.listables.items.VehiculoListItem
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
-import tallerwapo.taller_interfaz.formularios.FormularioNuevoCliente
-import tallerwapo.taller_interfaz.formularios.FormularioNuevoVehiculo
+import tallerwapo.taller_interfaz.formularios.clientes.FormularioNuevoCliente
+import tallerwapo.taller_interfaz.formularios.vehiculos.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 class PruebasScreen : Screen {
@@ -37,6 +38,7 @@ class PruebasScreen : Screen {
         var mostrarCliente by remember { mutableStateOf(false) }
         var mostrarNuevoVehiculo by remember { mutableStateOf(false) }
         var mostrarConfirmacion by remember { mutableStateOf(false) }
+        var mostrarNuevaCita by remember { mutableStateOf(false) }
 
         // 🔹 DATOS DE PRUEBA
         val vehiculos = remember {
@@ -69,6 +71,11 @@ class PruebasScreen : Screen {
             AppBoton(
                 text = "Nuevo Vehiculo",
                 onClick = { mostrarNuevoVehiculo = true }
+            )
+
+            AppBoton(
+                text = "Nuevo Cita",
+                onClick = { mostrarNuevaCita = true }
             )
 
             AppBoton(
@@ -109,6 +116,18 @@ class PruebasScreen : Screen {
                 onCerrar = { mostrarNuevoVehiculo = false }
             )
         }
+
+
+        FormularioEmergente(
+            mostrar = mostrarNuevaCita,
+            onCerrar = { mostrarNuevaCita = false }
+        ) {
+            FormularioNuevaCita(
+                onCerrar = { mostrarNuevaCita = false },
+                vehiculo = null
+            )
+        }
+
 
         if (mostrarConfirmacion) {
             MensajesEmergentes.mostrarDialogo(

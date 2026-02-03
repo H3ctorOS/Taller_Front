@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.objetos.CampoEntrada
+package tallerwapo.taller_interfaz.objetos.campoEntrada
 
 
 import androidx.compose.foundation.layout.*

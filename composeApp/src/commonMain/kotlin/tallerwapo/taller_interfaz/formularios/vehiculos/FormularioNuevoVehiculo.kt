@@ -1,12 +1,16 @@
-package tallerwapo.taller_interfaz.formularios
+package tallerwapo.taller_interfaz.formularios.vehiculos
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tallerwapo.taller_interfaz.objetos.CampoEntrada.CampoEntradaRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.ApiContexto
@@ -15,7 +19,8 @@ import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.utils.FormulariosService
 import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.InterfazContext
-import tallerwapo.taller_interfaz.objetos.CampoEntrada.SeleccionableRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.SeleccionableRow
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
@@ -25,19 +30,17 @@ fun FormularioNuevoVehiculo(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-
     val vehiculosRepo = ApiContexto.vehiculosRepo
+
     val scope = rememberCoroutineScope()
 
     var listaPropietarios by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
-
 
     var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(clientePropietario) }
     var matricula by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
     var observaciones by remember { mutableStateOf("") }
-
 
     // ───────── Cargar propietarios ─────────
     LaunchedEffect(Unit) {
@@ -47,28 +50,35 @@ fun FormularioNuevoVehiculo(
         }
     }
 
-
-    // ───────── Validación del formulario ─────────
     fun formularioEsValido(): Boolean {
         return propietarioSeleccionado != null &&
                 matricula.isNotBlank()
     }
 
+    val scrollState = rememberScrollState()
 
+    Box(
+        modifier = Modifier
+            .widthIn(max = 900.dp)
+            .heightIn(max = 700.dp) // altura máxima para que aparezca scroll si es necesario
+            .background(theme.surfaceColor, theme.cornerRadius)
+            .padding(theme.paddingS)
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
-                .widthIn(max = 900.dp)
-                .background(theme.surfaceColor, theme.cornerRadius)
+                .verticalScroll(scrollState)
                 .padding(theme.paddingM)
         ) {
             Text(
-                text = "Nuevo vehículo",
-                style = theme.title
+                text = "Nuevo Vehículo",
+                style = theme.title,
+                modifier = Modifier.padding(bottom = theme.paddingL)
             )
 
             Spacer(Modifier.height(theme.paddingL))
 
-            // ───────── PROPIETARIO (Seleccionable) ─────────
+            // Propietario
             if (clientePropietario == null) {
                 SeleccionableRow(
                     titulo = "Propietario",
@@ -91,19 +101,16 @@ fun FormularioNuevoVehiculo(
                 valor = matricula,
                 onValueChange = { matricula = it }
             )
-
             CampoEntradaRow(
                 titulo = "Marca",
                 valor = marca,
                 onValueChange = { marca = it }
             )
-
             CampoEntradaRow(
                 titulo = "Modelo",
                 valor = modelo,
                 onValueChange = { modelo = it }
             )
-
             CampoEntradaRow(
                 titulo = "Observaciones",
                 valor = observaciones,
@@ -116,13 +123,13 @@ fun FormularioNuevoVehiculo(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-
-                AppBoton(text = "Cancelar",
-                    onClick = { onCerrar()})
+                AppBoton(text = "Cancelar", onClick = { onCerrar() })
 
                 Spacer(Modifier.width(theme.paddingM))
 
-                AppBoton( text = "Guardar", enabled = formularioEsValido(),
+                AppBoton(
+                    text = "Guardar",
+                    enabled = formularioEsValido(),
                     onClick = {
                         scope.launch(Dispatchers.IO) {
                             val vehiculo = VehiculoBO(
@@ -132,17 +139,21 @@ fun FormularioNuevoVehiculo(
                                 marca = marca,
                                 modelo = modelo
                             )
-
                             Logs.info(this, "Creando nuevo vehículo")
-
                             val respuesta = vehiculosRepo.crearVehiculo(vehiculo)
-                            FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
+                            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
                         }
                     }
                 )
-
             }
         }
 
+        // Barra de scroll
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.CenterEnd)
+        )
     }
-
+}

@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.formularios
+package tallerwapo.taller_interfaz.formularios.clientes
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
@@ -21,7 +21,7 @@ import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import tallerwapo.taller_interfaz.InterfazContext
-import tallerwapo.taller_interfaz.objetos.CampoEntrada.CampoEntradaRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 
 @Composable
 fun FormularioModificarCliente(

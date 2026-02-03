@@ -49,6 +49,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.client.cio)
+            implementation("com.toedter:jcalendar:1.4")
         }
     }
 }
