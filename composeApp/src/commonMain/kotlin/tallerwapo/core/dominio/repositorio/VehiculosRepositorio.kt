@@ -40,4 +40,11 @@ class VehiculosRepositorio  (
     }
 
 
+    suspend fun buscarTodos() : List<VehiculoBO>? {
+        //llamar al servidor por api
+        var respuesta : RespuestaDTO<List <VehiculoBO>> = apiRest.buscarTodos()
+        return respuesta.BoRespuesta
+    }
+
+
 }

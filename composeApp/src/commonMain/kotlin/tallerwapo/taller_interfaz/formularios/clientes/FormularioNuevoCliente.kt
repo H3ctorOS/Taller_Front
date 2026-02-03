@@ -63,6 +63,14 @@ fun FormularioNuevoCliente(
     val scrollState = rememberScrollState()
 
 
+    // ───────── Validación del formulario ─────────
+    fun formularioEsValido(): Boolean {
+        return apellidos.isNotBlank() &&
+                nombre.isNotBlank()
+    }
+
+
+
     Box(
         modifier = Modifier
             .widthIn(max = 800.dp)
@@ -105,6 +113,7 @@ fun FormularioNuevoCliente(
 
                 AppBoton(
                     text = "Guardar",
+                    enabled = formularioEsValido(),
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             val cliente = ClienteBO(

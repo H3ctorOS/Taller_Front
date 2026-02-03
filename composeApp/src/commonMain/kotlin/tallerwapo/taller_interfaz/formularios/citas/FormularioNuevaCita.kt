@@ -2,91 +2,94 @@ package tallerwapo.taller_interfaz.formularios.citas
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.dp
-import tallerwapo.core.contexto.ApiContexto
-import tallerwapo.taller_interfaz.InterfazContext
-import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
-import tallerwapo.taller_interfaz.objetos.botones.AppBoton
-import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.VehiculoBO
-import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoFechaHoraRow
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
+import tallerwapo.core.utils.FormulariosService
+import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.objetos.botones.AppBoton
+import tallerwapo.taller_interfaz.objetos.campoEntrada.*
+import tallerwapo.taller_interfaz.themes.AppThemeProvider
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioNuevaCita(
-    vehiculo: VehiculoBO?,
+    vehiculo: VehiculoBO? = null,
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val citasRepo = ApiContexto.citasRepo
+    val vehiculosRepo = ApiContexto.vehiculosRepo
 
-    // Estados de los campos
+    var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
+
     var concepto by remember { mutableStateOf("") }
-    var fechaInicio by remember { mutableStateOf(LocalDateTime.now()) }
-    var fechaFin by remember { mutableStateOf(LocalDateTime.now().plusHours(48)) }
+    var vehiculoSelccionado by remember { mutableStateOf<VehiculoBO?>(vehiculo) }
+    var fechaInicio by remember { mutableStateOf<Instant>(Clock.System.now()) }
+    var fechaFin by remember { mutableStateOf<Instant>(Clock.System.now()+2.days) }
     var observaciones by remember { mutableStateOf("") }
 
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-
-    // Estados para los date pickers
     var mostrarPickerInicio by remember { mutableStateOf(false) }
     var mostrarPickerFin by remember { mutableStateOf(false) }
 
-    val datePickerStateInicio: DatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = fechaInicio
-            .toInstant(ZoneOffset.UTC)
-            .toEpochMilli()
-    )
+    // ✅ Estados de los calendarios
+    val datePickerStateInicio = rememberDatePickerState()
+    val datePickerStateFin = rememberDatePickerState()
 
-    val datePickerStateFin: DatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = fechaFin
-            .toInstant(ZoneOffset.UTC)
-            .toEpochMilli()
-    )
-
-    // Scroll state para la columna
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        if (vehiculoSelccionado == null) {
+            vehiculosRepo.buscarTodos()?.let { listaVehiculos = it }
+        }
+    }
+
+    fun formularioEsValido(): Boolean {
+        return vehiculoSelccionado != null && concepto.isNotBlank()
+    }
+
+    fun crearCita() {
+        val vehiculoActual = vehiculoSelccionado ?: return
+        scope.launch(Dispatchers.IO) {
+            val cita = CitaBO(
+                vehiculoUuid = vehiculoActual.uuid,
+                concepto = concepto,
+                fechaInicio = fechaInicio,
+                fechaFinalizada = fechaFin,
+                observaciones = observaciones
+            )
+            //llamar al repo
+            val respuesta = citasRepo.crearCita(cita)
+
+            //Gestionar la respuesta
+            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+        }
+    }
 
     Box(
         modifier = Modifier
             .widthIn(max = 800.dp)
-            .heightIn(max = 900.dp)
+            .heightIn(max = 750.dp)
             .background(theme.surfaceColor, theme.cornerRadius)
             .padding(theme.paddingS)
             .fillMaxSize()
     ) {
-        // Columna scrollable
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
@@ -97,10 +100,35 @@ fun FormularioNuevaCita(
                 style = theme.title,
                 modifier = Modifier.padding(bottom = theme.paddingL)
             )
+
             Spacer(Modifier.height(theme.paddingL))
 
-            CampoEntradaRow(titulo = "concepto", valor = concepto, onValueChange = { concepto = it })
-            CampoEntradaRow(titulo = "observaciones", valor = observaciones, onValueChange = { observaciones = it })
+            if (vehiculo == null) {
+                SeleccionableRow(
+                    titulo = "Vehículo",
+                    items = listaVehiculos,
+                    seleccionado = vehiculoSelccionado,
+                    onSeleccionChange = { vehiculoSelccionado = it },
+                    labelProvider = { it.matricula }
+                )
+            } else {
+                CampoEntradaRow(
+                    titulo = "Vehículo",
+                    valor = vehiculoSelccionado!!.matricula,
+                    onValueChange = {},
+                    enabled = false
+                )
+            }
+
+            Spacer(Modifier.height(theme.paddingS))
+
+            CampoEntradaRow(
+                titulo = "Concepto",
+                valor = concepto,
+                onValueChange = { concepto = it }
+            )
+
+            Spacer(Modifier.height(theme.paddingS))
 
             CampoFechaHoraRow(
                 titulo = "Fecha inicio",
@@ -111,6 +139,8 @@ fun FormularioNuevaCita(
                 datePickerState = datePickerStateInicio
             )
 
+            Spacer(Modifier.height(theme.paddingS))
+
             CampoFechaHoraRow(
                 titulo = "Fecha fin",
                 fecha = fechaFin,
@@ -120,22 +150,32 @@ fun FormularioNuevaCita(
                 datePickerState = datePickerStateFin
             )
 
-            Spacer(modifier = Modifier.height(theme.paddingL))
+            Spacer(Modifier.height(theme.paddingL))
+
+            CampoEntradaTextoRow(
+                titulo = "Observaciones",
+                valor = observaciones,
+                onValueChange = { observaciones = it }
+            )
+
+            Spacer(Modifier.height(theme.paddingL))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                AppBoton(text = "Cancelar", onClick = { onCerrar() })
+                AppBoton(text = "Cancelar", onClick = onCerrar)
+
                 Spacer(modifier = Modifier.width(theme.paddingM))
+
                 AppBoton(
                     text = "Guardar",
-                    onClick = { }
+                    enabled = formularioEsValido(),
+                    onClick = { crearCita() }
                 )
             }
         }
 
-        // Barra de scroll
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
             modifier = Modifier

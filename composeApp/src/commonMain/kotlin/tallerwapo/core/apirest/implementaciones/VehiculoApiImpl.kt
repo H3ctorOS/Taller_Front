@@ -47,4 +47,8 @@ class VehiculoApiImpl(): VehiculosApi {
             )
         )
     }
+
+    override suspend fun buscarTodos(): RespuestaDTO<List<VehiculoBO>> {
+        return ApiRest.get(url = BASE_URL + BUSCARTODOS_VEHICULO_URL)
+    }
 }

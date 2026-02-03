@@ -10,23 +10,43 @@ import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import java.time.*
 import java.time.format.DateTimeFormatter
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampoFechaHoraRow(
     titulo: String,
-    fecha: LocalDateTime,
-    onFechaChange: (LocalDateTime) -> Unit,
+    fecha: Instant,
+    onFechaChange: (Instant) -> Unit,
     mostrarDatePicker: Boolean,
     onMostrarDatePickerChange: (Boolean) -> Unit,
     datePickerState: DatePickerState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    mantenerHoraExistente: Boolean = true
+    mantenerHoraExistente: Boolean = true,
+    zoneId: ZoneId = ZoneId.systemDefault()
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+
+    // Convertimos kotlin.time.Instant → java.time.LocalDateTime para UI
+    val localFecha = fecha.toJavaInstant().atZone(zoneId).toLocalDateTime()
+
+    // 🔹 Sincronizar DatePicker con la fecha recibida
+    LaunchedEffect(fecha, zoneId) {
+        val millis = fecha.toJavaInstant()
+            .atZone(zoneId)
+            .toLocalDate()
+            .atStartOfDay(zoneId)
+            .toInstant()
+            .toEpochMilli()
+
+        datePickerState.selectedDateMillis = millis
+        datePickerState.displayedMonthMillis = millis
+    }
 
     Column(
         modifier = modifier
@@ -34,20 +54,15 @@ fun CampoFechaHoraRow(
             .padding(vertical = theme.paddingS)
     ) {
         AppTextos(text = titulo, style = theme.bodyText)
-
         Spacer(Modifier.height(theme.paddingS))
 
-        // Cambio clave: envolvemos TextField en Box y ponemos clickable en el Box
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             TextField(
-                value = fecha.format(formatter),
+                value = localFecha.format(formatter),
                 onValueChange = {},
                 readOnly = true,
                 enabled = enabled,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 textStyle = theme.input,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -58,7 +73,6 @@ fun CampoFechaHoraRow(
                 shape = theme.cornerRadius
             )
 
-            // Clickable en el contenedor → evita conflictos con TextField
             if (enabled) {
                 Box(
                     modifier = Modifier
@@ -69,7 +83,6 @@ fun CampoFechaHoraRow(
         }
     }
 
-    // El diálogo se mantiene igual (ya está fuera de la Column → sibling)
     if (mostrarDatePicker) {
         DatePickerDialog(
             onDismissRequest = { onMostrarDatePickerChange(false) },
@@ -77,18 +90,25 @@ fun CampoFechaHoraRow(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val nuevaFecha = Instant
+                            val nuevaFechaLocal = java.time.Instant
                                 .ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
+                                .atZone(zoneId)
                                 .toLocalDate()
 
                             val fechaFinal = if (mantenerHoraExistente) {
-                                LocalDateTime.of(nuevaFecha, fecha.toLocalTime())
+                                val horaActual = localFecha.toLocalTime()
+                                LocalDateTime.of(nuevaFechaLocal, horaActual)
                             } else {
-                                LocalDateTime.of(nuevaFecha, LocalTime.MIDNIGHT)
+                                LocalDateTime.of(nuevaFechaLocal, LocalTime.MIDNIGHT)
                             }
 
-                            onFechaChange(fechaFinal)
+                            // Convertimos de vuelta a kotlin.time.Instant
+                            val nuevoInstant = fechaFinal
+                                .atZone(zoneId)
+                                .toInstant()
+                                .toKotlinInstant()
+
+                            onFechaChange(nuevoInstant)
                         }
                         onMostrarDatePickerChange(false)
                     }
