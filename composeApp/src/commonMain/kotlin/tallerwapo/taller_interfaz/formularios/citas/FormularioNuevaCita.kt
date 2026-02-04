@@ -47,7 +47,7 @@ fun FormularioNuevaCita(
     var mostrarPickerInicio by remember { mutableStateOf(false) }
     var mostrarPickerFin by remember { mutableStateOf(false) }
 
-    // ✅ Estados de los calendarios
+    // Estados de los calendarios
     val datePickerStateInicio = rememberDatePickerState()
     val datePickerStateFin = rememberDatePickerState()
 
