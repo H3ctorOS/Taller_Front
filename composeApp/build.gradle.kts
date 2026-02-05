@@ -41,6 +41,7 @@ kotlin {
             implementation(libs.ktor.client.negotiation)
             implementation(libs.kotlin.serialization)
             implementation(compose.materialIconsExtended)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -50,6 +51,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.client.cio)
             implementation("com.toedter:jcalendar:1.4")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
         }
     }
 }

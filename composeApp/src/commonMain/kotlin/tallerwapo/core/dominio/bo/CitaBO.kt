@@ -2,7 +2,7 @@ package tallerwapo.core.dominio.bo
 
 import kotlinx.serialization.Serializable
 import tallerwapo.core.dominio.bo.interfaz.BaseBO
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 
 @Serializable

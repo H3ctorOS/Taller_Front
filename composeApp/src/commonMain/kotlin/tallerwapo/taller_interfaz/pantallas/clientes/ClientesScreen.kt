@@ -168,7 +168,7 @@ class ClientesScreen : Screen {
                         onCitaDoubleClick = {  },
                         onNewClick = { mostrarFormularioNuevaCita = true },
                         mostrarNew = true,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier.width(600.dp)
                     )
                 }
 

@@ -8,18 +8,20 @@ import androidx.compose.ui.Modifier
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import java.time.*
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
-import kotlin.time.toKotlinInstant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampoFechaHoraRow(
     titulo: String,
-    fecha: Instant,
+    fecha: Instant, // ahora kotlin.time.Instant
     onFechaChange: (Instant) -> Unit,
     mostrarDatePicker: Boolean,
     onMostrarDatePickerChange: (Boolean) -> Unit,
@@ -32,18 +34,12 @@ fun CampoFechaHoraRow(
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
-    // Convertimos kotlin.time.Instant → java.time.LocalDateTime para UI
+    // Convertimos Instant → LocalDateTime para mostrar en UI
     val localFecha = fecha.toJavaInstant().atZone(zoneId).toLocalDateTime()
 
-    // 🔹 Sincronizar DatePicker con la fecha recibida
+    // Sincronizar DatePicker con la fecha recibida
     LaunchedEffect(fecha, zoneId) {
-        val millis = fecha.toJavaInstant()
-            .atZone(zoneId)
-            .toLocalDate()
-            .atStartOfDay(zoneId)
-            .toInstant()
-            .toEpochMilli()
-
+        val millis = fecha.toJavaInstant().toEpochMilli()
         datePickerState.selectedDateMillis = millis
         datePickerState.displayedMonthMillis = millis
     }
@@ -90,36 +86,29 @@ fun CampoFechaHoraRow(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val nuevaFechaLocal = java.time.Instant
-                                .ofEpochMilli(millis)
+                            val selectedDate = Instant.fromEpochMilliseconds(millis)
+                            val nuevaFechaLocal = selectedDate.toJavaInstant()
                                 .atZone(zoneId)
                                 .toLocalDate()
 
                             val fechaFinal = if (mantenerHoraExistente) {
-                                val horaActual = localFecha.toLocalTime()
-                                LocalDateTime.of(nuevaFechaLocal, horaActual)
+                                LocalDateTime.of(nuevaFechaLocal, localFecha.toLocalTime())
                             } else {
                                 LocalDateTime.of(nuevaFechaLocal, LocalTime.MIDNIGHT)
                             }
 
-                            // Convertimos de vuelta a kotlin.time.Instant
-                            val nuevoInstant = fechaFinal
-                                .atZone(zoneId)
-                                .toInstant()
-                                .toKotlinInstant()
+                            val nuevoInstant = Instant.fromEpochMilliseconds(
+                                fechaFinal.atZone(zoneId).toInstant().toEpochMilli()
+                            )
 
                             onFechaChange(nuevoInstant)
                         }
                         onMostrarDatePickerChange(false)
                     }
-                ) {
-                    Text("Aceptar")
-                }
+                ) { Text("Aceptar") }
             },
             dismissButton = {
-                TextButton(onClick = { onMostrarDatePickerChange(false) }) {
-                    Text("Cancelar")
-                }
+                TextButton(onClick = { onMostrarDatePickerChange(false) }) { Text("Cancelar") }
             }
         ) {
             DatePicker(state = datePickerState)

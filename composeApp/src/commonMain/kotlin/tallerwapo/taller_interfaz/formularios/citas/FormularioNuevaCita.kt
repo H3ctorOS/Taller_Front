@@ -21,9 +21,9 @@ import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
+import kotlin.time.Instant
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,13 +41,12 @@ fun FormularioNuevaCita(
     var concepto by remember { mutableStateOf("") }
     var vehiculoSelccionado by remember { mutableStateOf<VehiculoBO?>(vehiculo) }
     var fechaInicio by remember { mutableStateOf<Instant>(Clock.System.now()) }
-    var fechaFin by remember { mutableStateOf<Instant>(Clock.System.now()+2.days) }
+    var fechaFin by remember { mutableStateOf<Instant>(Clock.System.now() + 2.days) }
     var observaciones by remember { mutableStateOf("") }
 
     var mostrarPickerInicio by remember { mutableStateOf(false) }
     var mostrarPickerFin by remember { mutableStateOf(false) }
 
-    // Estados de los calendarios
     val datePickerStateInicio = rememberDatePickerState()
     val datePickerStateFin = rememberDatePickerState()
 
@@ -60,9 +59,7 @@ fun FormularioNuevaCita(
         }
     }
 
-    fun formularioEsValido(): Boolean {
-        return vehiculoSelccionado != null && concepto.isNotBlank()
-    }
+    fun formularioEsValido() = vehiculoSelccionado != null && concepto.isNotBlank()
 
     fun crearCita() {
         val vehiculoActual = vehiculoSelccionado ?: return
@@ -74,10 +71,7 @@ fun FormularioNuevaCita(
                 fechaFinalizada = fechaFin,
                 observaciones = observaciones
             )
-            //llamar al repo
             val respuesta = citasRepo.crearCita(cita)
-
-            //Gestionar la respuesta
             FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
         }
     }
@@ -165,9 +159,7 @@ fun FormularioNuevaCita(
                 horizontalArrangement = Arrangement.End
             ) {
                 AppBoton(text = "Cancelar", onClick = onCerrar)
-
                 Spacer(modifier = Modifier.width(theme.paddingM))
-
                 AppBoton(
                     text = "Guardar",
                     enabled = formularioEsValido(),

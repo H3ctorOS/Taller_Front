@@ -2,7 +2,7 @@ package tallerwapo.core.servicios
 
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.dto.CitaDTO
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 class CitasService {
     companion object {

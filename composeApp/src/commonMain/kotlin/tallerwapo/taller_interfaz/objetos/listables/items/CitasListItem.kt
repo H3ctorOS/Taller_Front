@@ -1,6 +1,7 @@
 package tallerwapo.taller_interfaz.objetos.listables.items
 
 import tallerwapo.core.dominio.bo.CitaBO
+import tallerwapo.core.servicios.formatoDiaMesAnio
 import tallerwapo.taller_interfaz.objetos.listables.interfaz.ListableBO
 
 data class CitasListItem(
@@ -8,6 +9,9 @@ data class CitasListItem(
 ) : ListableBO<CitaBO> {
 
     override val titulo: String = bo.concepto
-    override val subtitulo: String = bo.fechaInicio.toString()
+
+    override val subtitulo: String =
+        "${bo.fechaInicio.formatoDiaMesAnio()}      -->     ${bo.fechaFinalizada.formatoDiaMesAnio()}"
+
     override val descripcion: String? = bo.observaciones
 }
