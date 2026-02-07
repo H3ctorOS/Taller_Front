@@ -1,8 +1,8 @@
 package tallerwapo.core.apirest.interfaces
 
-import tallerwapo.core.dominio.bo.ClienteBO
-import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.dominio.dto.VehiculoDTO
+import tallerwapo.core.dominio.dto.ClienteDTO
 
 interface VehiculosApi {
     val BUSCAR_VEHICULO_MATRICULA_URL: String get() = "/vehiculos/buscarVehiculoPorMatricula"
@@ -12,12 +12,10 @@ interface VehiculosApi {
     val ELIMIAR_VEHICULO_URL: String get() = "/vehiculos/eliminarVehiculo"
     val ACTUALIZAR_VEHICULO_URL: String get() = "/vehiculos/actualizarVehiculo"
 
-
-    suspend fun crearVehiculo(vehiculo : VehiculoBO) : RespuestaDTO<VehiculoBO>
-    suspend fun eliminareVhiculo(vehiculo : VehiculoBO): RespuestaDTO<VehiculoBO>
-    suspend fun actualizarVehiculo(vehiculo : VehiculoBO): RespuestaDTO<VehiculoBO>
-    suspend fun buscarPorMatricula(matricula : String) : RespuestaDTO<VehiculoBO>
-    suspend fun buscarPorCliente(cliente: ClienteBO): RespuestaDTO<List <VehiculoBO>>
-
-    suspend fun buscarTodos(): RespuestaDTO<List <VehiculoBO>>
+    suspend fun crearVehiculo(vehiculo: VehiculoDTO): RespuestaDTO<VehiculoDTO>
+    suspend fun eliminarVehiculo(vehiculo: VehiculoDTO): RespuestaDTO<VehiculoDTO>
+    suspend fun actualizarVehiculo(vehiculo: VehiculoDTO): RespuestaDTO<VehiculoDTO>
+    suspend fun buscarPorMatricula(matricula: String): RespuestaDTO<VehiculoDTO>
+    suspend fun buscarPorCliente(cliente: ClienteDTO): RespuestaDTO<List<VehiculoDTO>>
+    suspend fun buscarTodos(): RespuestaDTO<List<VehiculoDTO>>
 }

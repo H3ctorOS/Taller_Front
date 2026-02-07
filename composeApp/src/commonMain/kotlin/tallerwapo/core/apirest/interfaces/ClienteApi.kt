@@ -1,6 +1,6 @@
 package tallerwapo.core.apirest.interfaces
 
-import tallerwapo.core.dominio.bo.ClienteBO
+import tallerwapo.core.dominio.dto.ClienteDTO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 
 interface ClienteApi {
@@ -10,8 +10,8 @@ interface ClienteApi {
     val ELIMIAR_CLIENTE_URL: String get() = "/clientes/eliminarCliente"
     val ACTUALIZAR_CLIENTE_URL: String get() = "/clientes/actualizarCliente"
 
-    suspend fun crearCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
-    suspend fun eliminarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
-    suspend fun buscarTodosLosClientes(): RespuestaDTO<List <ClienteBO>>
-    suspend fun actualizarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>
+    suspend fun crearCliente(cliente: ClienteDTO): RespuestaDTO<ClienteDTO>
+    suspend fun eliminarCliente(cliente: ClienteDTO): RespuestaDTO<ClienteDTO>
+    suspend fun buscarTodosLosClientes(): RespuestaDTO<List<ClienteDTO>>
+    suspend fun actualizarCliente(cliente: ClienteDTO): RespuestaDTO<ClienteDTO>
 }

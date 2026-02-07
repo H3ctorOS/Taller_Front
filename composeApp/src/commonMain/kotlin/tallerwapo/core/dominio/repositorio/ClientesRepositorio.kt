@@ -1,39 +1,72 @@
 package tallerwapo.core.dominio.repositorio
 
-
 import tallerwapo.core.dominio.bo.ClienteBO
-import tallerwapo.core.apirest.interfaces.ClienteApi
+import tallerwapo.core.dominio.dto.ClienteDTO
 import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.apirest.interfaces.ClienteApi
+import tallerwapo.core.utils.Logs
 
-class ClientesRepositorio (
-    private val apiRest : ClienteApi
+class ClientesRepositorio(
+    private val apiRest: ClienteApi
 ) {
 
+    // Crear cliente
     suspend fun crearCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO> {
+        Logs.info(this, "Creando cliente: $cliente")
+        val dto = ClienteDTO(cliente) // BO -> DTO
+        val respuestaDTO = apiRest.crearCliente(dto)
+        val boRespuesta = respuestaDTO.BoRespuesta?.let { ClienteBO(it) }
 
-        //llamar al servidor por api
-        return apiRest.crearCliente(cliente)
+        return RespuestaDTO(
+            status = respuestaDTO.status,
+            mensaje = respuestaDTO.mensaje,
+            BoRespuesta = boRespuesta,
+            isOk = respuestaDTO.isOk
+        )
     }
 
-    suspend fun buscarTodosLosClientes(): List<ClienteBO>? {
+    // Actualizar cliente
+    suspend fun actualizarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO> {
+        Logs.info(this, "Actualizando cliente: $cliente")
+        val dto = ClienteDTO(cliente)
+        val respuestaDTO = apiRest.actualizarCliente(dto)
+        val boRespuesta = respuestaDTO.BoRespuesta?.let { ClienteBO(it) }
 
-        //llamar al servidor por api
-        var respuesta : RespuestaDTO<List <ClienteBO>> = apiRest.buscarTodosLosClientes()
-        return respuesta.BoRespuesta;
+        return RespuestaDTO(
+            status = respuestaDTO.status,
+            mensaje = respuestaDTO.mensaje,
+            BoRespuesta = boRespuesta,
+            isOk = respuestaDTO.isOk
+        )
     }
 
-    suspend fun actualizarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO>{
-
-        //llamar al servidor por api
-        return apiRest.actualizarCliente(cliente)
-
-    }
+    // Eliminar cliente
     suspend fun eliminarCliente(cliente: ClienteBO): RespuestaDTO<ClienteBO> {
+        Logs.info(this, "Eliminando cliente: $cliente")
+        val dto = ClienteDTO(cliente)
+        val respuestaDTO = apiRest.eliminarCliente(dto)
+        val boRespuesta = respuestaDTO.BoRespuesta?.let { ClienteBO(it) }
 
-        //llamar al servidor por api
-        return apiRest.eliminarCliente(cliente)
-
+        return RespuestaDTO(
+            status = respuestaDTO.status,
+            mensaje = respuestaDTO.mensaje,
+            BoRespuesta = boRespuesta,
+            isOk = respuestaDTO.isOk
+        )
     }
 
+    // Buscar todos los clientes
+    suspend fun buscarTodos(): List<ClienteBO> {
+        Logs.info(this, "Buscando todos los clientes")
+
+        // Llamada a la API (devuelve DTOs)
+        val respuestaDTO = apiRest.buscarTodosLosClientes()
+
+        // Convertir lista de DTOs → lista de BOs
+        val boList = respuestaDTO.BoRespuesta?.map { ClienteBO(it) } ?: emptyList()
+
+        Logs.info(this, "Cantidad de clientes recibidos: ${boList.size}")
+        return boList
+    }
 
 }

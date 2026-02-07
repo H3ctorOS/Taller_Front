@@ -44,7 +44,7 @@ fun FormularioModificarVehiculo(
     // ───────── Cargar propietarios ─────────
     LaunchedEffect(Unit) {
         if (clientePropietario == null) {
-            val listaRecibida = ApiContexto.clientesRepo.buscarTodosLosClientes()
+            val listaRecibida = ApiContexto.clientesRepo.buscarTodos()
             if (listaRecibida != null) listaPropietarios = listaRecibida
         }
     }

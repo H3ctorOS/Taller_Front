@@ -54,8 +54,8 @@ class ClientesScreen : Screen {
         // --- Función para actualizar la lista de clientes ---
         suspend fun actualizarListaClientes() {
             try {
-                val recibida = ApiContexto.clientesRepo.buscarTodosLosClientes()
-                if (recibida != null) listaClientes = recibida
+                val recibida = ApiContexto.clientesRepo.buscarTodos()
+                listaClientes = recibida
 
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
@@ -70,7 +70,7 @@ class ClientesScreen : Screen {
         suspend fun actualizarListaVehiculos(cliente: ClienteBO) {
             try {
                 val recibida = ApiContexto.vehiculosRepo.buscarPorCliente(cliente)
-                if (recibida?.BoRespuesta != null) listaVehiculos = recibida.BoRespuesta
+                listaVehiculos = recibida
 
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(

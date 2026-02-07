@@ -1,8 +1,9 @@
 package tallerwapo.core.dominio.dto.contabilidad
 
+import kotlinx.serialization.Serializable
 import tallerwapo.core.dominio.dto.CitaDTO
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class IngresoConCitaDTO(
     val ingreso: IngresoDTO,
     val cita: CitaDTO
