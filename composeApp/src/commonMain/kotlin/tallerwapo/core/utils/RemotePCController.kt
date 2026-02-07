@@ -1,4 +1,4 @@
-package tallerwapo.core.servicios
+package tallerwapo.core.utils
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket

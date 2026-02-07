@@ -27,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.ClienteBO
-import tallerwapo.core.utils.FormulariosService
+import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow

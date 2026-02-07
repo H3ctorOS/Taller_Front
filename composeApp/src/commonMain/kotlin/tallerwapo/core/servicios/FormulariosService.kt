@@ -1,4 +1,4 @@
-package tallerwapo.core.utils
+package tallerwapo.core.servicios
 
 import tallerwapo.core.dominio.bo.interfaz.BaseBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
@@ -34,4 +34,3 @@ object FormulariosService {
 
 
 }
-
