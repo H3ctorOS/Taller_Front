@@ -12,6 +12,7 @@ import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.formularios.clientes.FormularioModificarCliente
 import tallerwapo.taller_interfaz.formularios.vehiculos.FormularioModificarVehiculo
@@ -43,12 +44,12 @@ class ClientesScreen : Screen {
         // --- Estados ---
         var clienteSeleccionado by remember { mutableStateOf<ClienteBO?>(null) }
         var vehiculoSeleccionado by remember { mutableStateOf<VehiculoBO?>(null) }
-        var citaSeleccionada by remember { mutableStateOf<CitaBO?>(null) }
+        var citaSeleccionadaUI by remember { mutableStateOf<CitaBoUI?>(null) }
 
         // --- Listas de desplegables---
         var listaClientes by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
         var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
-        var listaCitas by remember { mutableStateOf<List<CitaBO>>(emptyList()) }
+        var listaCitasUI by remember { mutableStateOf<List<CitaBoUI>>(emptyList()) }
 
 
         // --- Función para actualizar la lista de clientes ---
@@ -85,20 +86,21 @@ class ClientesScreen : Screen {
         // --- Función para actualizar la lista de citas---
         suspend fun actualizarListaCitas(vehiculo: VehiculoBO?) {
             try {
-                var respuestaRecibida : RespuestaDTO <List<CitaBO>>
-
-                if(vehiculo != null) {
-                    respuestaRecibida = ApiContexto.citasRepo.buscarPorVehiculo(vehiculo)
-                }else{
-                    respuestaRecibida = ApiContexto.citasRepo.buscarTodas()
+                val respuestaRecibida: RespuestaDTO<List<CitaBO>> = if (vehiculo != null) {
+                    ApiContexto.citasRepo.buscarPorVehiculo(vehiculo)
+                } else {
+                    ApiContexto.citasRepo.buscarTodas()
                 }
 
-                if (respuestaRecibida.BoRespuesta != null) listaCitas = respuestaRecibida.BoRespuesta
+                respuestaRecibida.BoRespuesta?.let { boList ->
+                    // Convertir BO a BOUI
+                    listaCitasUI = boList.map { CitaBoUI(it) }
+                }
 
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
                     titulo = "Error",
-                    mensaje = e.message ?: ("Ha habido algun problema a buscar la lista citas"),
+                    mensaje = e.message ?: "Ha habido algún problema al buscar la lista de citas",
                     botones = listOf(MensajesEmergentes.BotonDialogo("Ok") {})
                 )
             }
@@ -162,11 +164,13 @@ class ClientesScreen : Screen {
 
                     // Lista de citas del coche del cliente seleccionado
                     ListaCitas(
-                        listaCitas = listaCitas,
-                        citaSeleccionada = citaSeleccionada,
-                        onCitaSeleccionada = { citaSeleccionada = it},
-                        onCitaDoubleClick = {  },
+                        listaCitasUI = listaCitasUI,
+                        citaSeleccionada = citaSeleccionadaUI,
+                        onCitaSeleccionada = { citaSeleccionadaUI = it },
+                        onCitaDoubleClick = { /* opcional */ },
                         onNewClick = { mostrarFormularioNuevaCita = true },
+                        onNuevoIngresoClick = { citaUI -> /* abrir formulario ingreso */ },
+                        onNuevoGastoClick = { citaUI -> /* abrir formulario gasto */ },
                         mostrarNew = true,
                         modifier = Modifier.width(600.dp)
                     )
