@@ -18,18 +18,18 @@ import kotlin.time.Instant
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.GastoBO
-import tallerwapo.core.dominio.dto.RespuestaDTO
-import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
+import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.servicios.FormulariosService
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioNuevoGasto(
-    cita: CitaBO? = null,
+    cita: CitaBO,
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
@@ -58,13 +58,13 @@ fun FormularioNuevoGasto(
                 observaciones = observaciones
             )
 
-            val respuesta: RespuestaDTO<GastoBO> = if (cita != null) {
-                gastosRepo.crearGasto(gasto, cita)
-            } else {
-                gastosRepo.crearGasto(gasto)
-            }
+            // Usar directamente la cita que se pasó como parámetro
+            val respuesta: RespuestaDTO<GastoBO> = gastosRepo.crearGasto(gasto, cita)
 
-            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+            FormulariosService.gestionarRespuestaApi(respuesta) {
+                // Cerrar el formulario
+                onCerrar()
+            }
         }
     }
 

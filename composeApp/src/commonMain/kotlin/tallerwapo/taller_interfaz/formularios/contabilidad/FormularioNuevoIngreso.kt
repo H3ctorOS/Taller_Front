@@ -13,17 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Instant
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.IngresoBO
-import tallerwapo.core.dominio.dto.RespuestaDTO
-import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import kotlin.time.Clock
-import kotlin.time.Instant
+import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.servicios.FormulariosService
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,8 +50,8 @@ fun FormularioNuevoIngreso(
 
     fun crearIngreso() {
         val cantidad = importe.toDoubleOrNull() ?: return
+
         scope.launch(Dispatchers.IO) {
-            // Creamos el BO sin referencia a la cita
             val ingreso = IngresoBO(
                 concepto = concepto,
                 importe = cantidad,
@@ -60,16 +60,18 @@ fun FormularioNuevoIngreso(
                 observaciones = observaciones
             )
 
-            // Llamamos al repo pasando también la cita asociada si es necesario
-            var respuesta: RespuestaDTO<IngresoBO>
-
-            if (cita != null) {
-                respuesta = ingresosRepo.crearIngreso(ingreso, cita)
-            }else{
-                respuesta = ingresosRepo.crearIngreso(ingreso)
+            // Usar directamente la cita que se pasó como parámetro
+            val respuesta: RespuestaDTO<IngresoBO> = if (cita != null) {
+                ingresosRepo.crearIngreso(ingreso, cita)
+            } else {
+                // versión sin cita
+                ingresosRepo.crearIngreso(ingreso)
             }
 
-            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+            FormulariosService.gestionarRespuestaApi(respuesta) {
+                // Cerrar el formulario
+                onCerrar()
+            }
         }
     }
 
