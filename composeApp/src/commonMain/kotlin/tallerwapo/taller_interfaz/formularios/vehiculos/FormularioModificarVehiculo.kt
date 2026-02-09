@@ -6,18 +6,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
-import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import tallerwapo.taller_interfaz.objetos.campoEntrada.SeleccionableRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
@@ -29,9 +28,9 @@ fun FormularioModificarVehiculo(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val vehiculosRepo = AppContexto.vehiculosRepo
+    val validaciones = ValidacionesCampoEntrada()
 
     val scope = rememberCoroutineScope()
-
     var listaPropietarios by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
 
     var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(clientePropietario) }
@@ -39,7 +38,6 @@ fun FormularioModificarVehiculo(
     var marca by remember { mutableStateOf(vehiculo.marca) }
     var modelo by remember { mutableStateOf(vehiculo.modelo) }
     var estado by remember { mutableStateOf(vehiculo.estado) }
-
 
     // ───────── Cargar propietarios ─────────
     LaunchedEffect(Unit) {
@@ -49,117 +47,118 @@ fun FormularioModificarVehiculo(
         }
     }
 
-
     // ───────── Validación del formulario ─────────
     fun formularioEsValido(): Boolean {
         return propietarioSeleccionado != null &&
-                matricula.isNotBlank()
+                validaciones.validarMatriculaEspañola.funcion(matricula) &&
+                marca.isNotBlank() &&
+                modelo.isNotBlank()
     }
 
+    Column(
+        modifier = Modifier
+            .widthIn(max = 900.dp)
+            .background(theme.surfaceColor, theme.cornerRadius)
+            .padding(theme.paddingM)
+    ) {
 
-        Column(
-            modifier = Modifier
-                .widthIn(max = 900.dp)
-                .background(theme.surfaceColor, theme.cornerRadius)
-                .padding(theme.paddingM)
-        ) {
+        Text(text = "Modificar vehículo", style = theme.title)
 
-            Text(text = "Modificar vehículo", style = theme.title)
+        Spacer(Modifier.height(theme.paddingL))
 
-            Spacer(Modifier.height(theme.paddingL))
-
-            // ───────── PROPIETARIO (Seleccionable) ─────────
-            if (clientePropietario == null) {
-                SeleccionableRow(
-                    titulo = "Propietario",
-                    items = listaPropietarios,
-                    seleccionado = propietarioSeleccionado,
-                    onSeleccionChange = { propietarioSeleccionado = it },
-                    labelProvider = { it.nombre }
-                )
-            } else {
-                CampoEntradaRow(
-                    titulo = "Propietario",
-                    valor = clientePropietario.nombre,
-                    onValueChange = {},
-                    enabled = false
-                )
-            }
-
-            CampoEntradaRow(
-                titulo = "Matrícula",
-                valor = matricula,
-                onValueChange = { matricula = it }
+        // ───────── PROPIETARIO (Seleccionable) ─────────
+        if (clientePropietario == null) {
+            SeleccionableRow(
+                titulo = "Propietario",
+                items = listaPropietarios,
+                seleccionado = propietarioSeleccionado,
+                onSeleccionChange = { propietarioSeleccionado = it },
+                labelProvider = { it.nombre }
             )
-
+        } else {
             CampoEntradaRow(
-                titulo = "Marca",
-                valor = marca,
-                onValueChange = { marca = it }
+                titulo = "Propietario",
+                valor = clientePropietario.nombre,
+                onValueChange = {},
+                enabled = false
             )
-
-            CampoEntradaRow(
-                titulo = "Modelo",
-                valor = modelo,
-                onValueChange = { modelo = it }
-            )
-
-            CampoEntradaRow(
-                titulo = "Estado",
-                valor = estado,
-                onValueChange = { estado = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-
-                AppBoton(text = "Cancelar", onClick = { onCerrar()})
-
-                Spacer(Modifier.width(theme.paddingM))
-
-                AppBoton( text = "Modificar", enabled = formularioEsValido(),
-                    onClick = {
-                        scope.launch(Dispatchers.IO) {
-                            val vehiculoCopia = VehiculoBO(
-                                uuid = vehiculo.uuid,
-                                uuidPropietario = propietarioSeleccionado!!.uuid,
-                                matricula = matricula,
-                                marca = marca,
-                                modelo = modelo,
-                                estado = estado
-                            )
-
-                            Logs.info(this, "Modificando vehículo")
-
-                            val respuesta = vehiculosRepo.modificarVehiculo(vehiculoCopia)
-                            FormulariosService.gestionarRespuestaApi(respuesta){onCerrar() }
-                        }
-                    }
-                )
-
-                Spacer(Modifier.width(theme.paddingM))
-
-                AppBoton( text = "Eliminar",
-                    onClick = { var respuesta: RespuestaDTO<ClienteBO>
-
-                        // Eliminar el cliente
-                        CoroutineScope(Dispatchers.IO).launch {
-
-                            Logs.info(this, "Eliminando  vehiculo")
-
-                            val respuesta = vehiculosRepo.eliminarVehiculo(vehiculo)
-
-                            FormulariosService.gestionarRespuestaApi(respuesta){ onCerrar() }
-                        }
-                    })
-
-
-
-            }
         }
 
+        // ───────── CAMPOS OBLIGATORIOS ─────────
+        CampoEntradaRow(
+            titulo = "Matrícula",
+            valor = matricula,
+            onValueChange = { matricula = it },
+            validaciones = listOf(validaciones.validarMatriculaEspañola),
+            obligatorio = true
+        )
+
+        CampoEntradaRow(
+            titulo = "Marca",
+            valor = marca,
+            onValueChange = { marca = it },
+            obligatorio = true
+        )
+
+        CampoEntradaRow(
+            titulo = "Modelo",
+            valor = modelo,
+            onValueChange = { modelo = it },
+            obligatorio = true
+        )
+
+        // ───────── CAMPO OPCIONAL ─────────
+        CampoEntradaRow(
+            titulo = "Estado",
+            valor = estado,
+            onValueChange = { estado = it }
+        )
+
+        Spacer(Modifier.height(theme.paddingL))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+
+            AppBoton(text = "Cancelar", onClick = { onCerrar() })
+
+            Spacer(modifier = Modifier.width(theme.paddingM))
+
+            AppBoton(
+                text = "Modificar",
+                enabled = formularioEsValido(),
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        val vehiculoCopia = VehiculoBO(
+                            uuid = vehiculo.uuid,
+                            uuidPropietario = propietarioSeleccionado!!.uuid,
+                            matricula = matricula,
+                            marca = marca,
+                            modelo = modelo,
+                            estado = estado
+                        )
+
+                        Logs.info(this, "Modificando vehículo")
+
+                        val respuesta = vehiculosRepo.modificarVehiculo(vehiculoCopia)
+                        FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.width(theme.paddingM))
+
+            AppBoton(
+                text = "Eliminar",
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        Logs.info(this, "Eliminando vehículo")
+                        val respuesta = vehiculosRepo.eliminarVehiculo(vehiculo)
+                        FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                    }
+                }
+            )
+        }
     }
+}

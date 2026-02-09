@@ -16,6 +16,7 @@ import tallerwapo.core.utils.Logs
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import tallerwapo.taller_interfaz.objetos.campoEntrada.SeleccionableRow
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
@@ -29,9 +30,9 @@ fun FormularioNuevoVehiculo(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val vehiculosRepo = AppContexto.vehiculosRepo
+    val validaciones = ValidacionesCampoEntrada()
 
     val scope = rememberCoroutineScope()
-
     var listaPropietarios by remember { mutableStateOf<List<ClienteBO>>(emptyList()) }
 
     var propietarioSeleccionado by remember { mutableStateOf<ClienteBO?>(clientePropietario) }
@@ -49,7 +50,9 @@ fun FormularioNuevoVehiculo(
 
     fun formularioEsValido(): Boolean {
         return propietarioSeleccionado != null &&
-                matricula.isNotBlank()
+                validaciones.validarMatriculaEspañola.funcion(matricula) &&
+                marca.isNotBlank() &&
+                modelo.isNotBlank()
     }
 
     Box(
@@ -89,10 +92,31 @@ fun FormularioNuevoVehiculo(
                     )
                 }
 
-                CampoEntradaRow(titulo = "Matrícula", valor = matricula, onValueChange = { matricula = it })
-                CampoEntradaRow(titulo = "Marca", valor = marca, onValueChange = { marca = it })
-                CampoEntradaRow(titulo = "Modelo", valor = modelo, onValueChange = { modelo = it })
-                CampoEntradaRow(titulo = "Observaciones", valor = observaciones, onValueChange = { observaciones = it })
+                CampoEntradaRow(
+                    titulo = "Matrícula",
+                    valor = matricula,
+                    onValueChange = { matricula = it },
+                    validaciones = listOf(validaciones.validarMatriculaEspañola)
+                )
+                CampoEntradaRow(
+                    titulo = "Marca",
+                    valor = marca,
+                    onValueChange = { marca = it },
+                    enabled = true,
+                    validaciones = emptyList() // opcional: se puede usar validación de no vacío si quieres
+                )
+                CampoEntradaRow(
+                    titulo = "Modelo",
+                    valor = modelo,
+                    onValueChange = { modelo = it },
+                    enabled = true,
+                    validaciones = emptyList() // opcional: se puede usar validación de no vacío si quieres
+                )
+                CampoEntradaRow(
+                    titulo = "Observaciones",
+                    valor = observaciones,
+                    onValueChange = { observaciones = it }
+                )
 
                 Spacer(Modifier.height(theme.paddingL))
 

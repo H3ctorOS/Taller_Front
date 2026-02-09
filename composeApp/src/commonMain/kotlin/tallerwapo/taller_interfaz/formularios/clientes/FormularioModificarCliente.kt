@@ -18,6 +18,8 @@ import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
+
 
 @Composable
 fun FormularioModificarCliente(
@@ -26,6 +28,7 @@ fun FormularioModificarCliente(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val clientesRepo = AppContexto.clientesRepo
+    val validaciones = ValidacionesCampoEntrada()
 
     // Estados de los campos
     var nombre by remember { mutableStateOf(cliente.nombre) }
@@ -35,7 +38,16 @@ fun FormularioModificarCliente(
     var email by remember { mutableStateOf(cliente.email) }
     var telefono by remember { mutableStateOf(cliente.telefono.toString()) }
 
-    // Scroll state eliminado, lo maneja ScrollableContent
+    // ───────── Validación del formulario ─────────
+    fun formularioEsValido(): Boolean {
+        val nombreValido = nombre.isNotBlank()
+        val apellidosValido = apellidos.isNotBlank()
+        val dniValido = dni.isBlank() || validaciones.validarDni.funcion(dni)
+        val emailValido = email.isBlank() || validaciones.validarEmail.funcion(email)
+        val telefonoValido = telefono.isBlank() || validaciones.validarTelefono.funcion(telefono)
+
+        return nombreValido && apellidosValido && dniValido && emailValido && telefonoValido
+    }
 
     Box(
         modifier = Modifier
@@ -45,7 +57,7 @@ fun FormularioModificarCliente(
             .padding(theme.paddingS)
             .background(
                 color = theme.surfaceColor,
-                shape = theme.cornerRadius // asegúrate que sea RoundedCornerShape
+                shape = theme.cornerRadius
             )
     ) {
         ScrollableContent {
@@ -60,12 +72,48 @@ fun FormularioModificarCliente(
 
                 Spacer(Modifier.height(theme.paddingS))
 
-                CampoEntradaRow(titulo = "Nombre", valor = nombre, onValueChange = { nombre = it })
-                CampoEntradaRow(titulo = "Apellidos", valor = apellidos, onValueChange = { apellidos = it })
-                CampoEntradaRow(titulo = "Dni", valor = dni, onValueChange = { dni = it })
-                CampoEntradaRow(titulo = "Direccion", valor = direccion, onValueChange = { direccion = it })
-                CampoEntradaRow(titulo = "Email", valor = email, onValueChange = { email = it })
-                CampoEntradaRow(titulo = "Teléfono", valor = telefono, onValueChange = { telefono = it })
+                // ───────── Campos obligatorios ─────────
+                CampoEntradaRow(
+                    titulo = "Nombre",
+                    valor = nombre,
+                    onValueChange = { nombre = it },
+                    obligatorio = true
+                )
+
+                CampoEntradaRow(
+                    titulo = "Apellidos",
+                    valor = apellidos,
+                    onValueChange = { apellidos = it },
+                    obligatorio = true
+                )
+
+                // ───────── Campos opcionales ─────────
+                CampoEntradaRow(
+                    titulo = "DNI/NIE",
+                    valor = dni,
+                    onValueChange = { dni = it },
+                    validaciones = listOf(validaciones.validarDni)
+                )
+
+                CampoEntradaRow(
+                    titulo = "Dirección",
+                    valor = direccion,
+                    onValueChange = { direccion = it }
+                )
+
+                CampoEntradaRow(
+                    titulo = "Email",
+                    valor = email,
+                    onValueChange = { email = it },
+                    validaciones = listOf(validaciones.validarEmail)
+                )
+
+                CampoEntradaRow(
+                    titulo = "Teléfono",
+                    valor = telefono,
+                    onValueChange = { telefono = it },
+                    validaciones = listOf(validaciones.validarTelefono)
+                )
 
                 Spacer(modifier = Modifier.height(theme.paddingL))
 
@@ -79,6 +127,7 @@ fun FormularioModificarCliente(
 
                     AppBoton(
                         text = "Modificar",
+                        enabled = formularioEsValido(),
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val clienteModificado = ClienteBO(

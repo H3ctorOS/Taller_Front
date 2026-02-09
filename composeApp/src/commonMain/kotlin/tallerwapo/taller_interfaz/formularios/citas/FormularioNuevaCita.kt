@@ -2,12 +2,17 @@ package tallerwapo.taller_interfaz.formularios.citas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.VehiculoBO
@@ -17,9 +22,6 @@ import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,10 +110,12 @@ fun FormularioNuevaCita(
 
                 Spacer(Modifier.height(theme.paddingS))
 
+                // ───────── CAMPO OBLIGATORIO ─────────
                 CampoEntradaRow(
                     titulo = "Concepto",
                     valor = concepto,
-                    onValueChange = { concepto = it }
+                    onValueChange = { concepto = it },
+                    obligatorio = true
                 )
 
                 Spacer(Modifier.height(theme.paddingS))
