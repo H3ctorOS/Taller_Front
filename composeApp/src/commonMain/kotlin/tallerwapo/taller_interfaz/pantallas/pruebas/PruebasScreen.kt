@@ -7,14 +7,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.VehiculoBO
-import tallerwapo.core.servicios.ConfigServices
 import tallerwapo.core.servicios.GestionSistemaServicios
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.formularios.clientes.FormularioNuevoCliente
 import tallerwapo.taller_interfaz.formularios.vehiculos.FormularioNuevoVehiculo
+import tallerwapo.taller_interfaz.formularios.configuracion.FormularioConfiguracionApp
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
-import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.objetos.listables.ListableBOList
@@ -34,16 +33,13 @@ class PruebasScreen : Screen {
         var mostrarNuevoVehiculo by remember { mutableStateOf(false) }
         var mostrarConfirmacion by remember { mutableStateOf(false) }
         var mostrarNuevaCita by remember { mutableStateOf(false) }
+        var mostrarConfiguracion by remember { mutableStateOf(false) } // <- Nuevo
 
         // 🔹 DATOS DE PRUEBA
         val vehiculos = remember {
             listOf(VehiculoBO(1, 1, "Toyota", "Corolla"))
         }
         val vehiculoItems = remember { vehiculos.map { VehiculoListItem(it) } }
-
-        // 🔹 Estado de IP y MAC sincronizado con ConfigServices
-        var ipServidor by remember { mutableStateOf(ConfigServices.obtenerIp()) }
-        var macServidor by remember { mutableStateOf(ConfigServices.obtenerMac()) }
 
         Column(
             modifier = Modifier
@@ -89,44 +85,10 @@ class PruebasScreen : Screen {
 
             Spacer(Modifier.height(theme.paddingM))
 
-            // --- Campo de entrada IP ---
-            CampoEntradaRow(
-                titulo = "IP del Servidor",
-                valor = ipServidor,
-                onValueChange = { nuevaIp ->
-                    ipServidor = nuevaIp
-                    ConfigServices.actualizarIp(nuevaIp)
-                },
-                modifier = Modifier.wrapContentWidth()
-            )
-
+            // --- Botón Configuración App ---
             AppBoton(
-                text = "Restablecer IP",
-                onClick = {
-                    ConfigServices.restablecerIp()
-                    ipServidor = ConfigServices.obtenerIp()
-                }
-            )
-
-            Spacer(Modifier.height(theme.paddingM))
-
-            // --- Campo de entrada MAC ---
-            CampoEntradaRow(
-                titulo = "MAC del Servidor",
-                valor = macServidor,
-                onValueChange = { nuevaMac ->
-                    macServidor = nuevaMac
-                    ConfigServices.actualizarMac(nuevaMac)
-                },
-                modifier = Modifier.wrapContentWidth()
-            )
-
-            AppBoton(
-                text = "Restablecer MAC",
-                onClick = {
-                    ConfigServices.restablecerMac()
-                    macServidor = ConfigServices.obtenerMac()
-                }
+                text = "Configuración App",
+                onClick = { mostrarConfiguracion = true }
             )
 
             Spacer(Modifier.height(theme.paddingM))
@@ -166,6 +128,14 @@ class PruebasScreen : Screen {
             onCerrar = { mostrarNuevaCita = false }
         ) {
             FormularioNuevaCita(onCerrar = { mostrarNuevaCita = false }, vehiculo = null)
+        }
+
+        // --- Nuevo emergente para configuración ---
+        FormularioEmergente(
+            mostrar = mostrarConfiguracion,
+            onCerrar = { mostrarConfiguracion = false }
+        ) {
+            FormularioConfiguracionApp(onCerrar = { mostrarConfiguracion = false })
         }
 
         if (mostrarConfirmacion) {

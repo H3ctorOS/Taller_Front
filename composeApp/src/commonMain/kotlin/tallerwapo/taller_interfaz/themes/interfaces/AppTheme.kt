@@ -6,13 +6,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 
 interface AppTheme {
-
     // Colores base
     val backgroundColor: Color
     val surfaceColor: Color
     val inputBackgroundColor: Color
     val selectedBackgroundColor: Color
-
 
     val textoPrincipalColor: Color
     val textoSecundarioColor: Color
@@ -21,13 +19,16 @@ interface AppTheme {
     val buttonContent: Color
     val buttonSecondary: Color
 
+    // Nuevo color y estilo de error
+    val errorColor: Color
+    val errorText: TextStyle
+
     // Tipografía
     val title: TextStyle
     val subTitleText: TextStyle
     val bodyText: TextStyle
     val input: TextStyle
     val botonText: TextStyle
-
 
     // Formas
     val cornerRadius: RoundedCornerShape

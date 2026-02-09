@@ -22,6 +22,9 @@ object ThemeOscuro : AppTheme {
     override val buttonContent = Color.White
     override val buttonSecondary = Color(0xFF4A4A4A)
 
+    // ─── Nuevo color de error ───
+    override val errorColor = Color.Red
+
     override val title = TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
@@ -47,6 +50,11 @@ object ThemeOscuro : AppTheme {
     override val botonText = TextStyle(
         fontSize = 14.sp,
         color = buttonContent
+    )
+
+    override val errorText = TextStyle(
+        color = errorColor,
+        fontSize = 12.sp
     )
 
     override val cornerRadius = RoundedCornerShape(10.dp)

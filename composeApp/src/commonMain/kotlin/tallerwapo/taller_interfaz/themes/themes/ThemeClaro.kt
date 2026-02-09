@@ -23,6 +23,9 @@ object ThemeClaro : AppTheme {
     override val buttonContent = Color(0xFFE2E2E2)
     override val buttonSecondary = Color(0xFFCBD2D9)
 
+    // ───────── Nuevo color de error ─────────
+    override val errorColor = Color.Red
+
     // ───────── Tipografía ─────────
     override val title = TextStyle(
         fontSize = 18.sp,
@@ -49,6 +52,11 @@ object ThemeClaro : AppTheme {
     override val botonText = TextStyle(
         fontSize = 14.sp,
         color = buttonContent
+    )
+
+    override val errorText = TextStyle(
+        color = errorColor,
+        fontSize = 12.sp
     )
 
     // ───────── Formas y espaciados ─────────
