@@ -18,6 +18,7 @@ import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ fun FormularioNuevoIngreso(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val ingresosRepo = AppContexto.ingresosRepo
+    val validaciones = remember { ValidacionesCampoEntrada() }
 
     var concepto by remember { mutableStateOf("") }
     var importe by remember { mutableStateOf("") }
@@ -42,7 +44,8 @@ fun FormularioNuevoIngreso(
     val datePickerState = rememberDatePickerState()
     val scope = rememberCoroutineScope()
 
-    fun formularioEsValido() = concepto.isNotBlank() && importe.toDoubleOrNull() != null
+    fun formularioEsValido() =
+        concepto.isNotBlank() && importe.toDoubleOrNull() != null
 
     fun crearIngreso() {
         val cantidad = importe.toDoubleOrNull() ?: return
@@ -56,13 +59,10 @@ fun FormularioNuevoIngreso(
                 observaciones = observaciones
             )
 
-            val respuesta: RespuestaDTO<IngresoBO> = if (cita != null) {
-                ingresosRepo.crearIngreso(ingreso, cita)
-            } else {
-                ingresosRepo.crearIngreso(ingreso)
+            val respuesta: RespuestaDTO<IngresoBO> = ingresosRepo.crearIngreso(ingreso, cita)
+            FormulariosService.gestionarRespuestaApi(respuesta) {
+                onCerrar()
             }
-
-            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
         }
     }
 
@@ -89,6 +89,7 @@ fun FormularioNuevoIngreso(
                 CampoEntradaRow(
                     titulo = "Concepto",
                     valor = concepto,
+                    obligatorio = true,
                     onValueChange = { concepto = it }
                 )
 
@@ -97,7 +98,9 @@ fun FormularioNuevoIngreso(
                 CampoEntradaRow(
                     titulo = "Importe",
                     valor = importe,
-                    onValueChange = { importe = it }
+                    obligatorio = true,
+                    onValueChange = { importe = it },
+                    validaciones = listOf(validaciones.validarNumero)
                 )
 
                 Spacer(Modifier.height(theme.paddingS))

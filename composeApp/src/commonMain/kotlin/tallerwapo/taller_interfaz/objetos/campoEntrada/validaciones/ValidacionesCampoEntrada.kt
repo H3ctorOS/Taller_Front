@@ -2,6 +2,13 @@ package tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones
 
 class ValidacionesCampoEntrada {
 
+    // ─── Validación de número ───
+    val validarNumero = Validacion(
+        funcion = { valor ->
+            valor.isBlank() || valor.toDoubleOrNull() != null
+        },
+        mensajeError = "Debe introducir un número válido"
+    )
     // ─── Validación de IP ───
     val validarIp = Validacion(
         funcion = { valor ->

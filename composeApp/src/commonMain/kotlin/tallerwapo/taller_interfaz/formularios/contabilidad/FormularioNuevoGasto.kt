@@ -1,5 +1,6 @@
 package tallerwapo.taller_interfaz.formularios.gastos
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -9,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Instant
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.GastoBO
@@ -17,13 +20,9 @@ import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberDatePickerState
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +33,7 @@ fun FormularioNuevoGasto(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val gastosRepo = AppContexto.gastosRepo
+    val validaciones = ValidacionesCampoEntrada()
 
     var descripcion by remember { mutableStateOf("") }
     var importe by remember { mutableStateOf("") }
@@ -44,7 +44,11 @@ fun FormularioNuevoGasto(
     val datePickerState = rememberDatePickerState()
     val scope = rememberCoroutineScope()
 
-    fun formularioEsValido() = descripcion.isNotBlank() && importe.toDoubleOrNull() != null
+    // ───────── Validación del formulario ─────────
+    fun formularioEsValido(): Boolean {
+        return descripcion.isNotBlank() &&
+                importe.toDoubleOrNull() != null
+    }
 
     fun crearGasto() {
         val cantidad = importe.toDoubleOrNull() ?: return
@@ -57,9 +61,12 @@ fun FormularioNuevoGasto(
                 observaciones = observaciones
             )
 
-            val respuesta: RespuestaDTO<GastoBO> = gastosRepo.crearGasto(gasto, cita)
+            val respuesta: RespuestaDTO<GastoBO> =
+                gastosRepo.crearGasto(gasto, cita)
 
-            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+            FormulariosService.gestionarRespuestaApi(respuesta) {
+                onCerrar()
+            }
         }
     }
 
@@ -83,18 +90,23 @@ fun FormularioNuevoGasto(
 
                 Spacer(Modifier.height(theme.paddingL))
 
+                // ───────── DESCRIPCIÓN (OBLIGATORIA) ─────────
                 CampoEntradaRow(
                     titulo = "Descripción",
                     valor = descripcion,
-                    onValueChange = { descripcion = it }
+                    onValueChange = { descripcion = it },
+                    obligatorio = true
                 )
 
                 Spacer(Modifier.height(theme.paddingS))
 
+                // ───────── IMPORTE (OBLIGATORIO + NUMÉRICO) ─────────
                 CampoEntradaRow(
                     titulo = "Importe",
                     valor = importe,
-                    onValueChange = { importe = it }
+                    onValueChange = { importe = it },
+                    obligatorio = true,
+                    validaciones = listOf(validaciones.validarNumero)
                 )
 
                 Spacer(Modifier.height(theme.paddingS))
@@ -123,7 +135,9 @@ fun FormularioNuevoGasto(
                     horizontalArrangement = Arrangement.End
                 ) {
                     AppBoton(text = "Cancelar", onClick = onCerrar)
+
                     Spacer(modifier = Modifier.width(theme.paddingM))
+
                     AppBoton(
                         text = "Guardar",
                         enabled = formularioEsValido(),
