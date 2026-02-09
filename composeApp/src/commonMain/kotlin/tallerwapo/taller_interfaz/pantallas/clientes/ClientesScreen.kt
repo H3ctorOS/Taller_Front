@@ -34,12 +34,11 @@ class ClientesScreen : Screen {
 
         // --- Formularios ---
         var mostrarFormularioEditarCliente by remember { mutableStateOf(false) }
-        var mostrarFormularioNueloCliente by remember { mutableStateOf(false) }
+        var mostrarFormularioNuevoCliente by remember { mutableStateOf(false) }
         var mostrarFormularioEditarVehiculo by remember { mutableStateOf(false) }
         var mostrarFormularioNuevoVehiculo by remember { mutableStateOf(false) }
         var mostrarFormularioNuevaCita by remember { mutableStateOf(false) }
 
-        // Formularios de ingreso y gasto
         var mostrarFormularioNuevoIngreso by remember { mutableStateOf<CitaBoUI?>(null) }
         var mostrarFormularioNuevoGasto by remember { mutableStateOf<CitaBoUI?>(null) }
 
@@ -84,9 +83,7 @@ class ClientesScreen : Screen {
                     AppContexto.citasRepo.buscarPorVehiculo(vehiculo)
                 else AppContexto.citasRepo.buscarTodas()
 
-                respuesta.BoRespuesta?.let { boList ->
-                    listaCitasUI = boList.map { CitaBoUI(it) }
-                }
+                listaCitasUI = respuesta.BoRespuesta?.map { CitaBoUI(it) } ?: emptyList()
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
                     titulo = "Error",
@@ -105,13 +102,20 @@ class ClientesScreen : Screen {
             ListaClientes(
                 clientes = listaClientes,
                 clienteSeleccionado = clienteSeleccionado,
-                onClienteSeleccionado = {
-                    clienteSeleccionado = it
-                    scope.launch { actualizarListaVehiculos(it) }
+                onClienteSeleccionado = { cliente ->
+                    clienteSeleccionado = cliente
+
+                    // Reset dependientes al cambiar cliente
+                    vehiculoSeleccionado = null
+                    listaVehiculos = emptyList()
+                    citaSeleccionadaUI = null
+                    listaCitasUI = emptyList()
+
+                    scope.launch { actualizarListaVehiculos(cliente) }
                 },
                 onClienteDoubleClick = { clienteSeleccionado = it; mostrarFormularioEditarCliente = true },
                 modifier = Modifier.width(200.dp).fillMaxHeight(),
-                onNewClick = { mostrarFormularioNueloCliente = true },
+                onNewClick = { mostrarFormularioNuevoCliente = true },
                 mostrarNew = true
             )
 
@@ -124,9 +128,14 @@ class ClientesScreen : Screen {
                     ListaVehiculos(
                         vehiculos = listaVehiculos,
                         vehiculoSeleccionado = vehiculoSeleccionado,
-                        onVehiculoSeleccionado = {
-                            vehiculoSeleccionado = it
-                            scope.launch { actualizarListaCitas(it) }
+                        onVehiculoSeleccionado = { vehiculo ->
+                            vehiculoSeleccionado = vehiculo
+
+                            // Reset dependientes al cambiar vehículo
+                            citaSeleccionadaUI = null
+                            listaCitasUI = emptyList()
+
+                            scope.launch { actualizarListaCitas(vehiculo) }
                         },
                         onVehiculoDoubleClick = { vehiculoSeleccionado = it; mostrarFormularioEditarVehiculo = true },
                         modifier = Modifier.width(200.dp),
@@ -165,49 +174,78 @@ class ClientesScreen : Screen {
             mostrar = mostrarFormularioEditarCliente,
             onCerrar = { mostrarFormularioEditarCliente = false }
         ) {
-            clienteSeleccionado?.let { FormularioModificarCliente(it) {
-                mostrarFormularioEditarCliente = false
-                scope.launch { actualizarListaClientes() }
-            } }
+            clienteSeleccionado?.let {
+                FormularioModificarCliente(it) {
+                    mostrarFormularioEditarCliente = false
+                    scope.launch { actualizarListaClientes() }
+                }
+            }
         }
 
         FormularioEmergente(
-            mostrar = mostrarFormularioNueloCliente,
-            onCerrar = { mostrarFormularioNueloCliente = false }
+            mostrar = mostrarFormularioNuevoCliente,
+            onCerrar = { mostrarFormularioNuevoCliente = false }
         ) {
             FormularioNuevoCliente {
-                mostrarFormularioNueloCliente = false
+                mostrarFormularioNuevoCliente = false
                 scope.launch { actualizarListaClientes() }
             }
         }
 
+
+
+        // --- Formulario nuevo vehículo ---
         FormularioEmergente(
             mostrar = mostrarFormularioNuevoVehiculo,
             onCerrar = { mostrarFormularioNuevoVehiculo = false }
         ) {
             FormularioNuevoVehiculo(clientePropietario = clienteSeleccionado) {
                 mostrarFormularioNuevoVehiculo = false
+
+                // Actualizar lista automáticamente
+                clienteSeleccionado?.let { cliente ->
+                    scope.launch { actualizarListaVehiculos(cliente) }
+                }
             }
         }
 
+
+
+        // --- Formulario editar vehículo ---
         FormularioEmergente(
             mostrar = mostrarFormularioEditarVehiculo,
             onCerrar = { mostrarFormularioEditarVehiculo = false }
         ) {
-            vehiculoSeleccionado?.let { FormularioModificarVehiculo(clienteSeleccionado, it) {
-                mostrarFormularioEditarVehiculo = false
-                scope.launch { clienteSeleccionado?.let { actualizarListaVehiculos(it) } }
-            } }
+            vehiculoSeleccionado?.let { vehiculo ->
+                FormularioModificarVehiculo(clienteSeleccionado, vehiculo) {
+                    mostrarFormularioEditarVehiculo = false
+
+                    // Actualizar lista automáticamente
+                    clienteSeleccionado?.let { cliente ->
+                        scope.launch { actualizarListaVehiculos(cliente) }
+                    }
+
+                    // Opcional: resetear selección del vehículo editado
+                    vehiculoSeleccionado = null
+                }
+            }
         }
 
+
+
+        // --- Formulario nueva cita ---
         FormularioEmergente(
             mostrar = mostrarFormularioNuevaCita,
             onCerrar = { mostrarFormularioNuevaCita = false }
         ) {
-            vehiculoSeleccionado?.let { FormularioNuevaCita(it) {
-                mostrarFormularioNuevaCita = false
-                scope.launch { actualizarListaCitas(it) }
-            } }
+            vehiculoSeleccionado?.let { vehiculo ->
+                FormularioNuevaCita(vehiculo) {
+                    mostrarFormularioNuevaCita = false
+
+                    // Actualizar lista de citas automáticamente
+                    scope.launch { actualizarListaCitas(vehiculo) }
+                }
+            }
         }
 
         // --- Formulario nuevo ingreso ---
@@ -216,7 +254,14 @@ class ClientesScreen : Screen {
             onCerrar = { mostrarFormularioNuevoIngreso = null }
         ) {
             mostrarFormularioNuevoIngreso?.let { citaUI ->
-                FormularioNuevoIngreso(cita = citaUI.cita) { mostrarFormularioNuevoIngreso = null }
+                FormularioNuevoIngreso(cita = citaUI.cita) {
+                    mostrarFormularioNuevoIngreso = null
+
+                    // Usar el vehículo actualmente seleccionado para actualizar la lista
+                    vehiculoSeleccionado?.let { vehiculo ->
+                        scope.launch { actualizarListaCitas(vehiculo) }
+                    }
+                }
             }
         }
 
@@ -226,8 +271,19 @@ class ClientesScreen : Screen {
             onCerrar = { mostrarFormularioNuevoGasto = null }
         ) {
             mostrarFormularioNuevoGasto?.let { citaUI ->
-                FormularioNuevoGasto(cita = citaUI.cita) { mostrarFormularioNuevoGasto = null }
+                FormularioNuevoGasto(cita = citaUI.cita) {
+                    mostrarFormularioNuevoGasto = null
+
+                    // Usar el vehículo actualmente seleccionado para actualizar la lista
+                    vehiculoSeleccionado?.let { vehiculo ->
+                        scope.launch { actualizarListaCitas(vehiculo) }
+                    }
+                }
             }
         }
+
+
+
     }
+
 }
