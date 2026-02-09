@@ -1,31 +1,25 @@
 package tallerwapo.taller_interfaz.pantallas.pruebas
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.VehiculoBO
+import tallerwapo.core.servicios.ConfigServices
 import tallerwapo.core.servicios.GestionSistemaServicios
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
+import tallerwapo.taller_interfaz.formularios.clientes.FormularioNuevoCliente
+import tallerwapo.taller_interfaz.formularios.vehiculos.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
+import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.objetos.listables.ListableBOList
 import tallerwapo.taller_interfaz.objetos.listables.items.VehiculoListItem
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
-import tallerwapo.taller_interfaz.formularios.clientes.FormularioNuevoCliente
-import tallerwapo.taller_interfaz.formularios.vehiculos.FormularioNuevoVehiculo
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 class PruebasScreen : Screen {
@@ -43,15 +37,13 @@ class PruebasScreen : Screen {
 
         // 🔹 DATOS DE PRUEBA
         val vehiculos = remember {
-            listOf(
-                VehiculoBO(1, 1, "Toyota", "Corolla"),
-            )
+            listOf(VehiculoBO(1, 1, "Toyota", "Corolla"))
         }
+        val vehiculoItems = remember { vehiculos.map { VehiculoListItem(it) } }
 
-        val vehiculoItems = remember {
-            vehiculos.map { VehiculoListItem(it) }
-        }
-
+        // 🔹 Estado de IP y MAC sincronizado con ConfigServices
+        var ipServidor by remember { mutableStateOf(ConfigServices.obtenerIp()) }
+        var macServidor by remember { mutableStateOf(ConfigServices.obtenerMac()) }
 
         Column(
             modifier = Modifier
@@ -64,6 +56,7 @@ class PruebasScreen : Screen {
                 style = theme.title
             )
 
+            // --- Botones de pruebas ---
             AppBoton(
                 text = "Nuevo Cliente",
                 onClick = { mostrarCliente = true }
@@ -86,14 +79,59 @@ class PruebasScreen : Screen {
 
             AppBoton(
                 text = "Apagar",
-                onClick = { GestionSistemaServicios.apagarServidor()}
+                onClick = { GestionSistemaServicios.apagarServidor() }
             )
 
             AppBoton(
                 text = "Arrancar servidor",
-                onClick = { GestionSistemaServicios.arrancarServidor()}
+                onClick = { GestionSistemaServicios.arrancarServidor() }
             )
 
+            Spacer(Modifier.height(theme.paddingM))
+
+            // --- Campo de entrada IP ---
+            CampoEntradaRow(
+                titulo = "IP del Servidor",
+                valor = ipServidor,
+                onValueChange = { nuevaIp ->
+                    ipServidor = nuevaIp
+                    ConfigServices.actualizarIp(nuevaIp)
+                },
+                modifier = Modifier.wrapContentWidth()
+            )
+
+            AppBoton(
+                text = "Restablecer IP",
+                onClick = {
+                    ConfigServices.restablecerIp()
+                    ipServidor = ConfigServices.obtenerIp()
+                }
+            )
+
+            Spacer(Modifier.height(theme.paddingM))
+
+            // --- Campo de entrada MAC ---
+            CampoEntradaRow(
+                titulo = "MAC del Servidor",
+                valor = macServidor,
+                onValueChange = { nuevaMac ->
+                    macServidor = nuevaMac
+                    ConfigServices.actualizarMac(nuevaMac)
+                },
+                modifier = Modifier.wrapContentWidth()
+            )
+
+            AppBoton(
+                text = "Restablecer MAC",
+                onClick = {
+                    ConfigServices.restablecerMac()
+                    macServidor = ConfigServices.obtenerMac()
+                }
+            )
+
+            Spacer(Modifier.height(theme.paddingM))
+
+            // --- Lista de vehículos ---
             Box(
                 modifier = Modifier
                     .width(120.dp)
@@ -109,48 +147,34 @@ class PruebasScreen : Screen {
         }
 
         // ---- EMERGENTES ----
-
         FormularioEmergente(
             mostrar = mostrarCliente,
             onCerrar = { mostrarCliente = false }
         ) {
-            FormularioNuevoCliente(
-                onCerrar = { mostrarCliente = false }
-            )
+            FormularioNuevoCliente(onCerrar = { mostrarCliente = false })
         }
 
         FormularioEmergente(
             mostrar = mostrarNuevoVehiculo,
             onCerrar = { mostrarNuevoVehiculo = false }
         ) {
-            FormularioNuevoVehiculo(
-                onCerrar = { mostrarNuevoVehiculo = false }
-            )
+            FormularioNuevoVehiculo(onCerrar = { mostrarNuevoVehiculo = false })
         }
-
 
         FormularioEmergente(
             mostrar = mostrarNuevaCita,
             onCerrar = { mostrarNuevaCita = false }
         ) {
-            FormularioNuevaCita(
-                onCerrar = { mostrarNuevaCita = false },
-                vehiculo = null
-            )
+            FormularioNuevaCita(onCerrar = { mostrarNuevaCita = false }, vehiculo = null)
         }
-
 
         if (mostrarConfirmacion) {
             MensajesEmergentes.mostrarDialogo(
                 titulo = "Confirmación",
                 mensaje = "¿Deseas guardar los cambios?",
                 botones = listOf(
-                    MensajesEmergentes.BotonDialogo("Sí") {
-                        mostrarConfirmacion = false
-                    },
-                    MensajesEmergentes.BotonDialogo("No") {
-                        mostrarConfirmacion = false
-                    }
+                    MensajesEmergentes.BotonDialogo("Sí") { mostrarConfirmacion = false },
+                    MensajesEmergentes.BotonDialogo("No") { mostrarConfirmacion = false }
                 )
             )
         }

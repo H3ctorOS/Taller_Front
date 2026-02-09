@@ -13,14 +13,22 @@ import tallerwapo.core.apirest.interfaces.ClienteApi
 import tallerwapo.core.apirest.interfaces.GastosApi
 import tallerwapo.core.apirest.interfaces.GestionServidorApi
 import tallerwapo.core.apirest.interfaces.IngresosApi
+import tallerwapo.core.config.ConfigManager
+import tallerwapo.core.config.ConfigProperties
 import tallerwapo.core.dominio.repositorio.CitasRepositorio
 import tallerwapo.core.dominio.repositorio.ClientesRepositorio
 import tallerwapo.core.dominio.repositorio.GastosRepositorio
 import tallerwapo.core.dominio.repositorio.IngresosRepositorio
 import tallerwapo.core.dominio.repositorio.VehiculosRepositorio
 
-object ApiContexto {
+object AppContexto {
+    // --- Variables globales ---
+    var ipServidor :String = ""
+    var direccionMacServidor :String = ""
 
+
+    // --- Configuración ---
+    val config: ConfigProperties by lazy { ConfigManager.crear() }
 
     //Implementaciones API
     val vehiculosApi: VehiculosApi by lazy { VehiculoApiImpl() }

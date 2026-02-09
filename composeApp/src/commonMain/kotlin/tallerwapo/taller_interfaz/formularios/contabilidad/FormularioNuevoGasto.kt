@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Instant
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.GastoBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
@@ -33,7 +33,7 @@ fun FormularioNuevoGasto(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val gastosRepo = ApiContexto.gastosRepo
+    val gastosRepo = AppContexto.gastosRepo
 
     var descripcion by remember { mutableStateOf("") }
     var importe by remember { mutableStateOf("") }

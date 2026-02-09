@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.launch
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.*
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
@@ -56,7 +56,7 @@ class ClientesScreen : Screen {
         // --- Funciones de actualización ---
         suspend fun actualizarListaClientes() {
             try {
-                listaClientes = ApiContexto.clientesRepo.buscarTodos()
+                listaClientes = AppContexto.clientesRepo.buscarTodos()
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
                     titulo = "Error",
@@ -68,7 +68,7 @@ class ClientesScreen : Screen {
 
         suspend fun actualizarListaVehiculos(cliente: ClienteBO) {
             try {
-                listaVehiculos = ApiContexto.vehiculosRepo.buscarPorCliente(cliente)
+                listaVehiculos = AppContexto.vehiculosRepo.buscarPorCliente(cliente)
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
                     titulo = "Error",
@@ -81,8 +81,8 @@ class ClientesScreen : Screen {
         suspend fun actualizarListaCitas(vehiculo: VehiculoBO?) {
             try {
                 val respuesta = if (vehiculo != null)
-                    ApiContexto.citasRepo.buscarPorVehiculo(vehiculo)
-                else ApiContexto.citasRepo.buscarTodas()
+                    AppContexto.citasRepo.buscarPorVehiculo(vehiculo)
+                else AppContexto.citasRepo.buscarTodas()
 
                 respuesta.BoRespuesta?.let { boList ->
                     listaCitasUI = boList.map { CitaBoUI(it) }

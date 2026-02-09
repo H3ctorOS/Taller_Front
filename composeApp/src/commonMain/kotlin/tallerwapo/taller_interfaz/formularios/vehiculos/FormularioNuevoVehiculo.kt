@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.servicios.FormulariosService
@@ -28,7 +28,7 @@ fun FormularioNuevoVehiculo(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val vehiculosRepo = ApiContexto.vehiculosRepo
+    val vehiculosRepo = AppContexto.vehiculosRepo
 
     val scope = rememberCoroutineScope()
 
@@ -42,7 +42,7 @@ fun FormularioNuevoVehiculo(
 
     LaunchedEffect(Unit) {
         if (clientePropietario == null) {
-            val listaRecibida = ApiContexto.clientesRepo.buscarTodos()
+            val listaRecibida = AppContexto.clientesRepo.buscarTodos()
             if (listaRecibida != null) listaPropietarios = listaRecibida
         }
     }

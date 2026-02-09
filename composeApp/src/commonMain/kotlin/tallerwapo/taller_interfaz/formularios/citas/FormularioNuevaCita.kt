@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.servicios.FormulariosService
@@ -29,8 +29,8 @@ fun FormularioNuevaCita(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val citasRepo = ApiContexto.citasRepo
-    val vehiculosRepo = ApiContexto.vehiculosRepo
+    val citasRepo = AppContexto.citasRepo
+    val vehiculosRepo = AppContexto.vehiculosRepo
 
     var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
     var concepto by remember { mutableStateOf("") }

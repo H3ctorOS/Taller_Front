@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.core.utils.Logs
@@ -25,7 +25,7 @@ fun FormularioModificarCliente(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val clientesRepo = ApiContexto.clientesRepo
+    val clientesRepo = AppContexto.clientesRepo
 
     // Estados de los campos
     var nombre by remember { mutableStateOf(cliente.nombre) }

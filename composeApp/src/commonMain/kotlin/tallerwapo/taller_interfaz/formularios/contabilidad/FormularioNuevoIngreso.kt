@@ -4,14 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Instant
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.IngresoBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
@@ -32,7 +31,7 @@ fun FormularioNuevoIngreso(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val ingresosRepo = ApiContexto.ingresosRepo
+    val ingresosRepo = AppContexto.ingresosRepo
 
     var concepto by remember { mutableStateOf("") }
     var importe by remember { mutableStateOf("") }

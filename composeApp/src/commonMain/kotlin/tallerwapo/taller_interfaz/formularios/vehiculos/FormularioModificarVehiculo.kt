@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import tallerwapo.taller_interfaz.objetos.campoEntrada.CampoEntradaRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tallerwapo.core.contexto.ApiContexto
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.dominio.dto.RespuestaDTO
@@ -28,7 +28,7 @@ fun FormularioModificarVehiculo(
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-    val vehiculosRepo = ApiContexto.vehiculosRepo
+    val vehiculosRepo = AppContexto.vehiculosRepo
 
     val scope = rememberCoroutineScope()
 
@@ -44,7 +44,7 @@ fun FormularioModificarVehiculo(
     // ───────── Cargar propietarios ─────────
     LaunchedEffect(Unit) {
         if (clientePropietario == null) {
-            val listaRecibida = ApiContexto.clientesRepo.buscarTodos()
+            val listaRecibida = AppContexto.clientesRepo.buscarTodos()
             if (listaRecibida != null) listaPropietarios = listaRecibida
         }
     }
