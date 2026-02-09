@@ -89,6 +89,11 @@ class PruebasScreen : Screen {
                 onClick = { GestionSistemaServicios.apagarServidor()}
             )
 
+            AppBoton(
+                text = "Arrancar servidor",
+                onClick = { GestionSistemaServicios.arrancarServidor()}
+            )
+
             Box(
                 modifier = Modifier
                     .width(120.dp)

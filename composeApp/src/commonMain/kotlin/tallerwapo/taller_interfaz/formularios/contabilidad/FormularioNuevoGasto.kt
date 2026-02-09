@@ -1,14 +1,8 @@
 package tallerwapo.taller_interfaz.formularios.gastos
 
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -18,12 +12,18 @@ import kotlin.time.Instant
 import tallerwapo.core.contexto.ApiContexto
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.bo.GastoBO
+import tallerwapo.core.dominio.dto.RespuestaDTO
+import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
+import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import tallerwapo.core.dominio.dto.RespuestaDTO
-import tallerwapo.core.servicios.FormulariosService
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +42,6 @@ fun FormularioNuevoGasto(
 
     var mostrarPickerFecha by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
     fun formularioEsValido() = descripcion.isNotBlank() && importe.toDoubleOrNull() != null
@@ -58,13 +57,9 @@ fun FormularioNuevoGasto(
                 observaciones = observaciones
             )
 
-            // Usar directamente la cita que se pasó como parámetro
             val respuesta: RespuestaDTO<GastoBO> = gastosRepo.crearGasto(gasto, cita)
 
-            FormulariosService.gestionarRespuestaApi(respuesta) {
-                // Cerrar el formulario
-                onCerrar()
-            }
+            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
         }
     }
 
@@ -76,73 +71,66 @@ fun FormularioNuevoGasto(
             .padding(theme.paddingS)
             .fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(theme.paddingM)
-        ) {
-            Text(
-                text = "Nuevo Gasto",
-                style = theme.title,
-                modifier = Modifier.padding(bottom = theme.paddingL)
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            CampoEntradaRow(
-                titulo = "Descripción",
-                valor = descripcion,
-                onValueChange = { descripcion = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingS))
-
-            CampoEntradaRow(
-                titulo = "Importe",
-                valor = importe,
-                onValueChange = { importe = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingS))
-
-            CampoFechaHoraRow(
-                titulo = "Fecha",
-                fecha = fecha,
-                onFechaChange = { fecha = it },
-                mostrarDatePicker = mostrarPickerFecha,
-                onMostrarDatePickerChange = { mostrarPickerFecha = it },
-                datePickerState = datePickerState
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            CampoEntradaTextoRow(
-                titulo = "Observaciones",
-                valor = observaciones,
-                onValueChange = { observaciones = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+        ScrollableContent {
+            Column(
+                modifier = Modifier.padding(theme.paddingM)
             ) {
-                AppBoton(text = "Cancelar", onClick = onCerrar)
-                Spacer(modifier = Modifier.width(theme.paddingM))
-                AppBoton(
-                    text = "Guardar",
-                    enabled = formularioEsValido(),
-                    onClick = { crearGasto() }
+                Text(
+                    text = "Nuevo Gasto",
+                    style = theme.title,
+                    modifier = Modifier.padding(bottom = theme.paddingL)
                 )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                CampoEntradaRow(
+                    titulo = "Descripción",
+                    valor = descripcion,
+                    onValueChange = { descripcion = it }
+                )
+
+                Spacer(Modifier.height(theme.paddingS))
+
+                CampoEntradaRow(
+                    titulo = "Importe",
+                    valor = importe,
+                    onValueChange = { importe = it }
+                )
+
+                Spacer(Modifier.height(theme.paddingS))
+
+                CampoFechaHoraRow(
+                    titulo = "Fecha",
+                    fecha = fecha,
+                    onFechaChange = { fecha = it },
+                    mostrarDatePicker = mostrarPickerFecha,
+                    onMostrarDatePickerChange = { mostrarPickerFecha = it },
+                    datePickerState = datePickerState
+                )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                CampoEntradaTextoRow(
+                    titulo = "Observaciones",
+                    valor = observaciones,
+                    onValueChange = { observaciones = it }
+                )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AppBoton(text = "Cancelar", onClick = onCerrar)
+                    Spacer(modifier = Modifier.width(theme.paddingM))
+                    AppBoton(
+                        text = "Guardar",
+                        enabled = formularioEsValido(),
+                        onClick = { crearGasto() }
+                    )
+                }
             }
         }
-
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier
-                .fillMaxHeight()
-                .align(Alignment.CenterEnd)
-        )
     }
 }

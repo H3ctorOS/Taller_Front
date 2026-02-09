@@ -5,17 +5,12 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 
 /**
- * Control remoto de PCs Windows:
  * - Wake-on-LAN (enciende el PC si la placa de red soporta WOL)
- * - Apagar o reiniciar remotamente (requiere permisos de administrador en el equipo destino)
- *
- * Nota: Para shutdown/reboot remoto, el firewall de Windows debe permitir el acceso remoto y
- * el usuario debe tener privilegios para apagar/reiniciar el equipo.
  */
 object RemotePCController {
 
     // ----------------- WAKE-ON-LAN -----------------
-    fun wakeOnLan(macAddress: String) {
+    suspend fun wakeOnLan(macAddress: String) {
         val macBytes = getMacBytes(macAddress)
         val packet = ByteArray(6 + 16 * macBytes.size)
         for (i in 0 until 6) packet[i] = 0xFF.toByte()

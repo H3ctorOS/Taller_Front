@@ -1,14 +1,9 @@
 package tallerwapo.taller_interfaz.formularios.citas
 
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +15,11 @@ import tallerwapo.core.servicios.FormulariosService
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
 import tallerwapo.taller_interfaz.objetos.campoEntrada.*
+import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import kotlin.time.Instant
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +33,6 @@ fun FormularioNuevaCita(
     val vehiculosRepo = ApiContexto.vehiculosRepo
 
     var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
-
     var concepto by remember { mutableStateOf("") }
     var vehiculoSelccionado by remember { mutableStateOf<VehiculoBO?>(vehiculo) }
     var fechaInicio by remember { mutableStateOf<Instant>(Clock.System.now()) }
@@ -49,8 +44,6 @@ fun FormularioNuevaCita(
 
     val datePickerStateInicio = rememberDatePickerState()
     val datePickerStateFin = rememberDatePickerState()
-
-    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -84,95 +77,88 @@ fun FormularioNuevaCita(
             .padding(theme.paddingS)
             .fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(theme.paddingM)
-        ) {
-            Text(
-                text = "Nueva Cita",
-                style = theme.title,
-                modifier = Modifier.padding(bottom = theme.paddingL)
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            if (vehiculo == null) {
-                SeleccionableRow(
-                    titulo = "Vehículo",
-                    items = listaVehiculos,
-                    seleccionado = vehiculoSelccionado,
-                    onSeleccionChange = { vehiculoSelccionado = it },
-                    labelProvider = { it.matricula }
-                )
-            } else {
-                CampoEntradaRow(
-                    titulo = "Vehículo",
-                    valor = vehiculoSelccionado!!.matricula,
-                    onValueChange = {},
-                    enabled = false
-                )
-            }
-
-            Spacer(Modifier.height(theme.paddingS))
-
-            CampoEntradaRow(
-                titulo = "Concepto",
-                valor = concepto,
-                onValueChange = { concepto = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingS))
-
-            CampoFechaHoraRow(
-                titulo = "Fecha inicio",
-                fecha = fechaInicio,
-                onFechaChange = { fechaInicio = it },
-                mostrarDatePicker = mostrarPickerInicio,
-                onMostrarDatePickerChange = { mostrarPickerInicio = it },
-                datePickerState = datePickerStateInicio
-            )
-
-            Spacer(Modifier.height(theme.paddingS))
-
-            CampoFechaHoraRow(
-                titulo = "Fecha fin",
-                fecha = fechaFin,
-                onFechaChange = { fechaFin = it },
-                mostrarDatePicker = mostrarPickerFin,
-                onMostrarDatePickerChange = { mostrarPickerFin = it },
-                datePickerState = datePickerStateFin
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            CampoEntradaTextoRow(
-                titulo = "Observaciones",
-                valor = observaciones,
-                onValueChange = { observaciones = it }
-            )
-
-            Spacer(Modifier.height(theme.paddingL))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+        ScrollableContent {
+            Column(
+                modifier = Modifier.padding(theme.paddingM)
             ) {
-                AppBoton(text = "Cancelar", onClick = onCerrar)
-                Spacer(modifier = Modifier.width(theme.paddingM))
-                AppBoton(
-                    text = "Guardar",
-                    enabled = formularioEsValido(),
-                    onClick = { crearCita() }
+                Text(
+                    text = "Nueva Cita",
+                    style = theme.title,
+                    modifier = Modifier.padding(bottom = theme.paddingL)
                 )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                if (vehiculo == null) {
+                    SeleccionableRow(
+                        titulo = "Vehículo",
+                        items = listaVehiculos,
+                        seleccionado = vehiculoSelccionado,
+                        onSeleccionChange = { vehiculoSelccionado = it },
+                        labelProvider = { it.matricula }
+                    )
+                } else {
+                    CampoEntradaRow(
+                        titulo = "Vehículo",
+                        valor = vehiculoSelccionado!!.matricula,
+                        onValueChange = {},
+                        enabled = false
+                    )
+                }
+
+                Spacer(Modifier.height(theme.paddingS))
+
+                CampoEntradaRow(
+                    titulo = "Concepto",
+                    valor = concepto,
+                    onValueChange = { concepto = it }
+                )
+
+                Spacer(Modifier.height(theme.paddingS))
+
+                CampoFechaHoraRow(
+                    titulo = "Fecha inicio",
+                    fecha = fechaInicio,
+                    onFechaChange = { fechaInicio = it },
+                    mostrarDatePicker = mostrarPickerInicio,
+                    onMostrarDatePickerChange = { mostrarPickerInicio = it },
+                    datePickerState = datePickerStateInicio
+                )
+
+                Spacer(Modifier.height(theme.paddingS))
+
+                CampoFechaHoraRow(
+                    titulo = "Fecha fin",
+                    fecha = fechaFin,
+                    onFechaChange = { fechaFin = it },
+                    mostrarDatePicker = mostrarPickerFin,
+                    onMostrarDatePickerChange = { mostrarPickerFin = it },
+                    datePickerState = datePickerStateFin
+                )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                CampoEntradaTextoRow(
+                    titulo = "Observaciones",
+                    valor = observaciones,
+                    onValueChange = { observaciones = it }
+                )
+
+                Spacer(Modifier.height(theme.paddingL))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AppBoton(text = "Cancelar", onClick = onCerrar)
+                    Spacer(modifier = Modifier.width(theme.paddingM))
+                    AppBoton(
+                        text = "Guardar",
+                        enabled = formularioEsValido(),
+                        onClick = { crearCita() }
+                    )
+                }
             }
         }
-
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier
-                .fillMaxHeight()
-                .align(Alignment.CenterEnd)
-        )
     }
 }
