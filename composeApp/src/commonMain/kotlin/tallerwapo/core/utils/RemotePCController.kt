@@ -36,21 +36,4 @@ object RemotePCController {
         return ByteArray(6) { i -> hex[i].toInt(16).toByte() }
     }
 
-    // ----------------- APAGAR / REINICIAR REMOTO WINDOWS -----------------
-    fun shutdownRemote(host: String) {
-        executeCommand("shutdown /s /m \\\\$host /t 0 /f", "apagado")
-    }
-
-    fun rebootRemote(host: String) {
-        executeCommand("shutdown /r /m \\\\$host /t 0 /f", "reinicio")
-    }
-
-    private fun executeCommand(command: String, action: String) {
-        try {
-            ProcessBuilder("cmd", "/c", command).start()
-            println("Comando de $action enviado: $command")
-        } catch (e: Exception) {
-            println("Error al enviar comando de $action: ${e.message}")
-        }
-    }
 }

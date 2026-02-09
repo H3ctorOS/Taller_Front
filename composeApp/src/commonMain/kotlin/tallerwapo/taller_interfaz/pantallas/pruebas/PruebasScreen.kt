@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.core.dominio.bo.VehiculoBO
+import tallerwapo.core.servicios.GestionSistemaServicios
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
@@ -81,6 +82,11 @@ class PruebasScreen : Screen {
             AppBoton(
                 text = "Mostrar Confirmación",
                 onClick = { mostrarConfirmacion = true }
+            )
+
+            AppBoton(
+                text = "Apagar",
+                onClick = { GestionSistemaServicios.apagarServidor()}
             )
 
             Box(
