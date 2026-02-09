@@ -17,7 +17,8 @@ fun CampoEntradaRow(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    validaciones: List<Validacion> = emptyList() // <- lista de Validacion
+    validaciones: List<Validacion> = emptyList(), // lista de Validacion
+    obligatorio: Boolean = false // <- nuevo parámetro
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     var mensajeError by remember { mutableStateOf<String?>(null) }
@@ -41,9 +42,13 @@ fun CampoEntradaRow(
             onValueChange = { nuevoValor ->
                 onValueChange(nuevoValor)
 
-                // Validar todas las reglas y coger el mensaje de la primera que falle
-                val fallo = validaciones.firstOrNull { !it.funcion(nuevoValor) }
-                mensajeError = fallo?.mensajeError
+                // Validar obligatorio
+                mensajeError = if (obligatorio && nuevoValor.isBlank()) {
+                    "Este campo es obligatorio"
+                } else {
+                    // Validar todas las reglas y coger el mensaje de la primera que falle
+                    validaciones.firstOrNull { !it.funcion(nuevoValor) }?.mensajeError
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             textStyle = theme.input,
@@ -66,3 +71,4 @@ fun CampoEntradaRow(
         }
     }
 }
+

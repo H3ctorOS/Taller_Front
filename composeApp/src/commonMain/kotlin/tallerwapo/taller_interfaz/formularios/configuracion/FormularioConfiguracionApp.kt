@@ -32,7 +32,8 @@ fun FormularioConfiguracionApp(
             valor = ipServidor,
             onValueChange = { nuevaIp -> ipServidor = nuevaIp },
             modifier = Modifier,
-            validaciones = listOf(validaciones.validarNoVacio,validaciones.validarIp)
+            validaciones = listOf(validaciones.validarIp),
+            obligatorio = true
         )
 
         Spacer(Modifier.height(theme.paddingM))
@@ -43,7 +44,8 @@ fun FormularioConfiguracionApp(
             valor = macServidor,
             onValueChange = { nuevaMac -> macServidor = nuevaMac },
             modifier = Modifier,
-            validaciones = listOf(validaciones.validarNoVacio,validaciones.validarMac)
+            validaciones = listOf(validaciones.validarMac),
+            obligatorio = true
         )
 
         Spacer(Modifier.height(theme.paddingM))

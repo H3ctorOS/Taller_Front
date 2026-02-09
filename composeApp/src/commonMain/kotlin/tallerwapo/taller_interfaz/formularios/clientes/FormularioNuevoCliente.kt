@@ -20,6 +20,7 @@ import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import tallerwapo.taller_interfaz.objetos.campoEntrada.validaciones.ValidacionesCampoEntrada
 
 @Composable
 fun FormularioNuevoCliente(
@@ -27,6 +28,7 @@ fun FormularioNuevoCliente(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val clientesRepo = AppContexto.clientesRepo
+    val validaciones = ValidacionesCampoEntrada()
 
     // Estados de los campos
     var nombre by remember { mutableStateOf("") }
@@ -39,21 +41,26 @@ fun FormularioNuevoCliente(
 
     // ───────── Validación del formulario ─────────
     fun formularioEsValido(): Boolean {
-        return apellidos.isNotBlank() && nombre.isNotBlank()
+        // Se valida el campo obligatorio y las validaciones específicas
+        val nombreValido = nombre.isNotBlank()
+        val apellidosValido = apellidos.isNotBlank()
+        val dniValido = dni.isBlank() || validaciones.validarDni.funcion(dni)
+        val emailValido = email.isBlank() || validaciones.validarEmail.funcion(email) // email opcional
+        val telefonoValido = telefono.isBlank() || validaciones.validarTelefono.funcion(telefono) // teléfono opcional
+
+        return nombreValido && apellidosValido && dniValido && emailValido && telefonoValido
     }
 
     Box(
         modifier = Modifier
             .widthIn(max = 800.dp)
-            .heightIn(max = 900.dp) // <-- Altura máxima
+            .heightIn(max = 900.dp)
             .background(theme.surfaceColor, theme.cornerRadius)
             .padding(theme.paddingS)
             .fillMaxSize()
     ) {
         ScrollableContent {
-            Column(
-                modifier = Modifier.padding(theme.paddingM)
-            ) {
+            Column(modifier = Modifier.padding(theme.paddingM)) {
                 Text(
                     text = "Nuevo Cliente",
                     style = theme.title,
@@ -62,13 +69,54 @@ fun FormularioNuevoCliente(
 
                 Spacer(Modifier.height(theme.paddingL))
 
-                CampoEntradaRow(titulo = "Nombre", valor = nombre, onValueChange = { nombre = it })
-                CampoEntradaRow(titulo = "Apellidos", valor = apellidos, onValueChange = { apellidos = it })
-                CampoEntradaRow(titulo = "Dni", valor = dni, onValueChange = { dni = it })
-                CampoEntradaRow(titulo = "Direccion", valor = direccion, onValueChange = { direccion = it })
-                CampoEntradaRow(titulo = "Email", valor = email, onValueChange = { email = it })
-                CampoEntradaRow(titulo = "Teléfono", valor = telefono, onValueChange = { telefono = it })
-                CampoEntradaRow(titulo = "Observaciones", valor = observaciones, onValueChange = { observaciones = it })
+                // ───────── Campos obligatorios ─────────
+                CampoEntradaRow(
+                    titulo = "Nombre",
+                    valor = nombre,
+                    onValueChange = { nombre = it },
+                    obligatorio = true
+                )
+
+                CampoEntradaRow(
+                    titulo = "Apellidos",
+                    valor = apellidos,
+                    onValueChange = { apellidos = it },
+                    obligatorio = true
+                )
+
+                CampoEntradaRow(
+                    titulo = "DNI/NIE",
+                    valor = dni,
+                    onValueChange = { dni = it },
+                    validaciones = listOf(validaciones.validarDni)
+                )
+
+                // ───────── Campos opcionales ─────────
+                CampoEntradaRow(
+                    titulo = "Dirección",
+                    valor = direccion,
+                    onValueChange = { direccion = it }
+                )
+
+                CampoEntradaRow(
+                    titulo = "Email",
+                    valor = email,
+                    onValueChange = { email = it },
+                    validaciones = listOf(validaciones.validarEmail)
+                )
+
+                CampoEntradaRow(
+                    titulo = "Teléfono",
+                    valor = telefono,
+                    onValueChange = { telefono = it },
+                    validaciones = listOf(validaciones.validarTelefono)
+                )
+
+                CampoEntradaRow(
+                    titulo = "Observaciones",
+                    valor = observaciones,
+                    onValueChange = { observaciones = it }
+                )
 
                 Spacer(modifier = Modifier.height(theme.paddingL))
 
@@ -107,3 +155,4 @@ fun FormularioNuevoCliente(
         }
     }
 }
+
