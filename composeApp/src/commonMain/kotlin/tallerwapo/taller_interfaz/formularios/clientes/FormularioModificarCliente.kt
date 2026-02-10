@@ -142,7 +142,10 @@ fun FormularioModificarCliente(
                                 )
                                 Logs.info(this, "Actualizando cliente")
                                 val respuesta = clientesRepo.actualizarCliente(clienteModificado)
-                                FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                                FormulariosService.gestionarRespuestaApi(
+                                    respuesta,
+                                    accionCerrar = { onCerrar() }
+                                )
                             }
                         }
                     )
@@ -155,7 +158,10 @@ fun FormularioModificarCliente(
                             CoroutineScope(Dispatchers.IO).launch {
                                 Logs.info(this, "Eliminando cliente")
                                 val respuesta = clientesRepo.eliminarCliente(cliente)
-                                FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                                FormulariosService.gestionarRespuestaApi(
+                                    respuesta,
+                                    accionCerrar = { onCerrar() }
+                                )
                             }
                         }
                     )

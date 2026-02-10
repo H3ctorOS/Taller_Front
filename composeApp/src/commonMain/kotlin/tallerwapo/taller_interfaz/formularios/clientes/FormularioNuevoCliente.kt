@@ -146,7 +146,10 @@ fun FormularioNuevoCliente(
                                 )
                                 Logs.info(this, "Creando nuevo cliente")
                                 val respuesta = clientesRepo.crearCliente(cliente)
-                                FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                                FormulariosService.gestionarRespuestaApi(
+                                    respuesta,
+                                    accionCerrar = { onCerrar() }
+                                )
                             }
                         }
                     )

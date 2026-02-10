@@ -64,9 +64,10 @@ fun FormularioNuevoGasto(
             val respuesta: RespuestaDTO<GastoBO> =
                 gastosRepo.crearGasto(gasto, cita)
 
-            FormulariosService.gestionarRespuestaApi(respuesta) {
-                onCerrar()
-            }
+            FormulariosService.gestionarRespuestaApi(
+                respuesta,
+                accionCerrar = { onCerrar() }
+            )
         }
     }
 

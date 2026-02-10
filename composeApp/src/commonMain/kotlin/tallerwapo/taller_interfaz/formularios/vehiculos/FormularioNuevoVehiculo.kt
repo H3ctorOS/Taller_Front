@@ -142,7 +142,10 @@ fun FormularioNuevoVehiculo(
                                 )
                                 Logs.info(this, "Creando nuevo vehículo")
                                 val respuesta = vehiculosRepo.crearVehiculo(vehiculo)
-                                FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                                FormulariosService.gestionarRespuestaApi(
+                                    respuesta,
+                                    accionCerrar = { onCerrar() }
+                                )
                             }
                         }
                     )

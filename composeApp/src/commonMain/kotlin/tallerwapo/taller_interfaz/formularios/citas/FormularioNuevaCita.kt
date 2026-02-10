@@ -67,7 +67,10 @@ fun FormularioNuevaCita(
                 observaciones = observaciones
             )
             val respuesta = citasRepo.crearCita(cita)
-            FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+            FormulariosService.gestionarRespuestaApi(
+                respuesta,
+                accionCerrar = { onCerrar() }
+            )
         }
     }
 

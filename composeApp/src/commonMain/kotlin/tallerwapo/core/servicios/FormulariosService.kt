@@ -6,31 +6,33 @@ import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 
 object FormulariosService {
 
-    fun  gestionarRespuestaApi(
+    fun gestionarRespuestaApi(
         respuesta: RespuestaDTO<out BaseBO>,
-        accionCerrar: () -> Unit = {}
-    ){
+        accionCerrar: () -> Unit = {},
+        mostrarOk: Boolean = false // <-- debe ir al final
+    ) {
         if (respuesta.isOk) {
-            MensajesEmergentes.mostrarDialogo(
-                titulo = "Osss",
-                mensaje = respuesta.mensaje,
-                botones = listOf(
-                    MensajesEmergentes.BotonDialogo("ok") {accionCerrar() },
+            if (mostrarOk) { // solo mostrar emergente si mostrarOk = true
+                MensajesEmergentes.mostrarDialogo(
+                    titulo = "Osss",
+                    mensaje = respuesta.mensaje,
+                    botones = listOf(
+                        MensajesEmergentes.BotonDialogo("Ok") { accionCerrar() },
+                    )
                 )
-            )
-
-
-        }else{
+            } else {
+                // Si no queremos mostrar nada, ejecutamos solo la acción de cierre
+                accionCerrar()
+            }
+        } else {
+            // Siempre mostramos el error
             MensajesEmergentes.mostrarDialogo(
-                titulo = "ERRORRRRR",
+                titulo = "ERROR",
                 mensaje = respuesta.mensaje,
                 botones = listOf(
                     MensajesEmergentes.BotonDialogo("Ok") { },
                 )
             )
         }
-
     }
-
-
 }

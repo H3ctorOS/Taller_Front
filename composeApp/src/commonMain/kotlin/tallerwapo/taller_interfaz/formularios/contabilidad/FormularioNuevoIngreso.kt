@@ -60,9 +60,10 @@ fun FormularioNuevoIngreso(
             )
 
             val respuesta: RespuestaDTO<IngresoBO> = ingresosRepo.crearIngreso(ingreso, cita)
-            FormulariosService.gestionarRespuestaApi(respuesta) {
-                onCerrar()
-            }
+            FormulariosService.gestionarRespuestaApi(
+                respuesta,
+                accionCerrar = { onCerrar() }
+            )
         }
     }
 

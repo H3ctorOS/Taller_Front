@@ -142,7 +142,10 @@ fun FormularioModificarVehiculo(
                         Logs.info(this, "Modificando vehículo")
 
                         val respuesta = vehiculosRepo.modificarVehiculo(vehiculoCopia)
-                        FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                        FormulariosService.gestionarRespuestaApi(
+                            respuesta,
+                            accionCerrar = { onCerrar() }
+                        )
                     }
                 }
             )
@@ -155,7 +158,10 @@ fun FormularioModificarVehiculo(
                     scope.launch(Dispatchers.IO) {
                         Logs.info(this, "Eliminando vehículo")
                         val respuesta = vehiculosRepo.eliminarVehiculo(vehiculo)
-                        FormulariosService.gestionarRespuestaApi(respuesta) { onCerrar() }
+                        FormulariosService.gestionarRespuestaApi(
+                            respuesta,
+                            accionCerrar = { onCerrar() }
+                        )
                     }
                 }
             )

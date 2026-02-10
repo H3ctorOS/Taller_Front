@@ -1,10 +1,8 @@
 package tallerwapo.taller_interfaz.objetos.listables.items
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,8 +15,10 @@ import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
 import tallerwapo.taller_interfaz.objetos.botones.MasBoton
 import tallerwapo.taller_interfaz.objetos.listables.interfaz.ListableBO
+import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import tallerwapo.taller_interfaz.themes.interfaces.AppTheme
+import androidx.compose.ui.Alignment
 
 data class CitasListItem(
     override val bo: CitaBoUI,
@@ -27,8 +27,7 @@ data class CitasListItem(
 ) : ListableBO<CitaBoUI> {
 
     override val titulo: String = bo.cita.concepto
-    override val subtitulo: String =
-        "${bo.cita.fechaInicio.formatoDiaMesAnio()} → ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}"
+    override val subtitulo: String = "${bo.cita.fechaInicio.formatoDiaMesAnio()}    →    ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}"
     override val descripcion: String? = bo.cita.observaciones
 
     @Composable
@@ -44,38 +43,81 @@ data class CitasListItem(
         var descripcionGasto by remember { mutableStateOf("") }
         var importeGasto by remember { mutableStateOf("") }
 
+        // --- Contabilidad ---
+        val totalIngresado = bo.ingresos.sumOf { it.importe }
+        val totalGastado = bo.gastos.sumOf { it.importe }
+        val ganado = totalIngresado - totalGastado
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(theme.paddingS)
         ) {
-            // Información básica
-            Text(
-                text = "Observaciones: ${bo.cita.observaciones.ifEmpty { "Ninguna" }}",
-                style = theme.bodyText
-            )
-            Text(
-                text = "Estado: ${bo.cita.codigoEstado.ifEmpty { "Desconocido" }}",
-                style = theme.bodyText
-            )
-            Text(
-                text = "Inicio: ${bo.cita.fechaInicio.formatoDiaMesAnio()}",
-                style = theme.bodyText
-            )
-            Text(
-                text = "Fin: ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}",
-                style = theme.bodyText
-            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // -------- CONTABILIDAD --------
+            Box(modifier = Modifier.width(300.dp).align(Alignment.CenterHorizontally)) {
+                Column() {
+                    AppTextos(
+                        text = "Contabilidad",
+                        style = theme.subTitleText,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    FilaContable("Ingresado", totalIngresado, theme)
+                    FilaContable("Gastado", totalGastado, theme)
+                    FilaContable("Ganado", ganado, theme)
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // -------- INGRESOS --------
-            Text(
-                text = "Ingresos",
-                style = theme.subTitleText,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Spacer flexible a la izquierda
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Título centrado
+                AppTextos(
+                    text = "Ingresos",
+                    style = theme.subTitleText,
+                    modifier = Modifier.wrapContentWidth()
+                )
+
+                // Spacer flexible a la derecha para centrar
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Botón +
+                MasBoton(
+                    onClick = {
+                        val cantidad = importeIngreso.toDoubleOrNull()
+                        if (conceptoIngreso.isNotBlank() && cantidad != null) {
+                            scope.launch(Dispatchers.IO) {
+                                val ingreso = IngresoBO(
+                                    concepto = conceptoIngreso,
+                                    importe = cantidad,
+                                    fecha = Clock.System.now(),
+                                    codEstado = "ACTIVO",
+                                    observaciones = ""
+                                )
+                                AppContexto.ingresosRepo.crearIngreso(ingreso, bo.cita)
+                            }
+                            conceptoIngreso = ""
+                            importeIngreso = ""
+                        } else {
+                            onNuevoIngresoClick(bo)
+                        }
+                    }
+                )
+            }
+
 
             bo.ingresos.forEach { ingreso ->
                 FilaMovimiento(
@@ -88,37 +130,47 @@ data class CitasListItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            MasBoton(
-                onClick = {
-                    val cantidad = importeIngreso.toDoubleOrNull()
-                    if (conceptoIngreso.isNotBlank() && cantidad != null) {
-                        scope.launch(Dispatchers.IO) {
-                            val ingreso = IngresoBO(
-                                concepto = conceptoIngreso,
-                                importe = cantidad,
-                                fecha = Clock.System.now(),
-                                codEstado = "ACTIVO",
-                                observaciones = ""
-                            )
-                            AppContexto.ingresosRepo.crearIngreso(ingreso, bo.cita)
-                        }
-                        conceptoIngreso = ""
-                        importeIngreso = ""
-                    } else {
-                        onNuevoIngresoClick(bo)
-                    }
-                }
-            )
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // -------- GASTOS --------
-            Text(
-                text = "Gastos",
-                style = theme.subTitleText,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                AppTextos(
+                    text = "Gastos",
+                    style = theme.subTitleText,
+                    modifier = Modifier.wrapContentWidth()
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                MasBoton(
+                    onClick = {
+                        val cantidad = importeGasto.toDoubleOrNull()
+                        if (descripcionGasto.isNotBlank() && cantidad != null) {
+                            scope.launch(Dispatchers.IO) {
+                                val gasto = GastoBO(
+                                    descripcion = descripcionGasto,
+                                    importe = cantidad,
+                                    fecha = Clock.System.now(),
+                                    observaciones = ""
+                                )
+                                AppContexto.gastosRepo.crearGasto(gasto, bo.cita)
+                            }
+                            descripcionGasto = ""
+                            importeGasto = ""
+                        } else {
+                            onNuevoGastoClick(bo)
+                        }
+                    }
+                )
+            }
+
 
             bo.gastos.forEach { gasto ->
                 FilaMovimiento(
@@ -131,25 +183,31 @@ data class CitasListItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            MasBoton(
-                onClick = {
-                    val cantidad = importeGasto.toDoubleOrNull()
-                    if (descripcionGasto.isNotBlank() && cantidad != null) {
-                        scope.launch(Dispatchers.IO) {
-                            val gasto = GastoBO(
-                                descripcion = descripcionGasto,
-                                importe = cantidad,
-                                fecha = Clock.System.now(),
-                                observaciones = ""
-                            )
-                            AppContexto.gastosRepo.crearGasto(gasto, bo.cita)
-                        }
-                        descripcionGasto = ""
-                        importeGasto = ""
-                    } else {
-                        onNuevoGastoClick(bo)
-                    }
-                }
+
+        }
+    }
+
+    // ---------- FILA CONTABILIDAD ----------
+    @Composable
+    private fun FilaContable(
+        label: String,
+        valor: Double,
+        theme: AppTheme
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = theme.paddingS, vertical = 2.dp)
+        ) {
+            AppTextos(
+                text = "$label:",
+                style = theme.bodyText,
+                modifier = Modifier.weight(1f)
+            )
+            AppTextos(
+                text = "${"%.2f".format(valor)} €",
+                style = theme.bodyText,
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -167,24 +225,22 @@ data class CitasListItem(
                 .fillMaxWidth()
                 .padding(horizontal = theme.paddingS, vertical = 2.dp)
         ) {
-            Text(
+            AppTextos(
                 text = fecha,
-                modifier = Modifier.weight(1.2f),
-                style = theme.bodyText
+                style = theme.bodyText,
+                modifier = Modifier.weight(1.2f)
             )
 
-            Text(
+            AppTextos(
                 text = concepto,
-                modifier = Modifier.weight(2.5f),
                 style = theme.bodyText,
-                maxLines = 1
+                modifier = Modifier.weight(2.5f)
             )
 
-            Text(
+            AppTextos(
                 text = "${"%.2f".format(importe)} €",
-                modifier = Modifier.weight(1f),
                 style = theme.bodyText,
-                textAlign = TextAlign.End
+                modifier = Modifier.weight(1f)
             )
         }
     }
