@@ -18,7 +18,7 @@ object GestionServidorServicios {
     }
 
     fun arrancarServidor() {
-        val mackAddres = "sdfgdsgg"
+        val mackAddres = AppContexto.direccionMacServidor
 
         CoroutineScope(Dispatchers.IO).launch {
             RemotePCController.wakeOnLan(mackAddres)
