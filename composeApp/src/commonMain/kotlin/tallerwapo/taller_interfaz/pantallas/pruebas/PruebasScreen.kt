@@ -5,9 +5,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.VehiculoBO
-import tallerwapo.core.servicios.GestionSistemaServicios
+import tallerwapo.core.servicios.GestionServidorServicios
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.formularios.clientes.FormularioNuevoCliente
@@ -75,12 +74,12 @@ class PruebasScreen : Screen {
 
             AppBoton(
                 text = "Apagar",
-                onClick = { GestionSistemaServicios.apagarServidor() }
+                onClick = { GestionServidorServicios.apagarServidor() }
             )
 
             AppBoton(
                 text = "Arrancar servidor",
-                onClick = { GestionSistemaServicios.arrancarServidor() }
+                onClick = { GestionServidorServicios.arrancarServidor() }
             )
 
             Spacer(Modifier.height(theme.paddingM))
