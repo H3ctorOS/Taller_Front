@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,11 +13,12 @@ import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.GastoBO
 import tallerwapo.core.dominio.bo.IngresoBO
 import tallerwapo.core.servicios.formatoDiaMesAnio
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
 import tallerwapo.taller_interfaz.objetos.botones.MasBoton
 import tallerwapo.taller_interfaz.objetos.listables.interfaz.ListableBO
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.themes.interfaces.AppTheme
 
 data class CitasListItem(
     override val bo: CitaBoUI,
@@ -31,7 +33,7 @@ data class CitasListItem(
 
     @Composable
     override fun ContenidoDesplegable() {
-        val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
+        val theme: AppTheme = AppThemeProvider.getTheme(InterfazContext.themeMode)
         val scope = rememberCoroutineScope()
 
         // --- Estados Ingreso ---
@@ -48,25 +50,48 @@ data class CitasListItem(
                 .padding(theme.paddingS)
         ) {
             // Información básica
-            Text(text = "Observaciones: ${bo.cita.observaciones.ifEmpty { "Ninguna" }}")
-            Text(text = "Estado: ${bo.cita.codigoEstado.ifEmpty { "Desconocido" }}")
-            Text(text = "Inicio: ${bo.cita.fechaInicio.formatoDiaMesAnio()}")
-            Text(text = "Fin: ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}")
+            Text(
+                text = "Observaciones: ${bo.cita.observaciones.ifEmpty { "Ninguna" }}",
+                style = theme.bodyText
+            )
+            Text(
+                text = "Estado: ${bo.cita.codigoEstado.ifEmpty { "Desconocido" }}",
+                style = theme.bodyText
+            )
+            Text(
+                text = "Inicio: ${bo.cita.fechaInicio.formatoDiaMesAnio()}",
+                style = theme.bodyText
+            )
+            Text(
+                text = "Fin: ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}",
+                style = theme.bodyText
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Ingresos ---
-            Text(text = "Ingresos", style = theme.subTitleText)
+            // -------- INGRESOS --------
+            Text(
+                text = "Ingresos",
+                style = theme.subTitleText,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
             bo.ingresos.forEach { ingreso ->
-                Text("${ingreso.concepto} - ${ingreso.importe}€ - ${ingreso.fecha.formatoDiaMesAnio()}", style = theme.bodyText)
+                FilaMovimiento(
+                    fecha = ingreso.fecha.formatoDiaMesAnio(),
+                    concepto = ingreso.concepto,
+                    importe = ingreso.importe,
+                    theme = theme
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
             MasBoton(
                 onClick = {
                     val cantidad = importeIngreso.toDoubleOrNull()
                     if (conceptoIngreso.isNotBlank() && cantidad != null) {
-                        // Crear ingreso directo
                         scope.launch(Dispatchers.IO) {
                             val ingreso = IngresoBO(
                                 concepto = conceptoIngreso,
@@ -80,7 +105,6 @@ data class CitasListItem(
                         conceptoIngreso = ""
                         importeIngreso = ""
                     } else {
-                        // Abrir formulario
                         onNuevoIngresoClick(bo)
                     }
                 }
@@ -88,18 +112,29 @@ data class CitasListItem(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Gastos ---
-            Text(text = "Gastos", style = theme.subTitleText)
+            // -------- GASTOS --------
+            Text(
+                text = "Gastos",
+                style = theme.subTitleText,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
             bo.gastos.forEach { gasto ->
-                Text("${gasto.descripcion} - ${gasto.importe}€ - ${gasto.fecha.formatoDiaMesAnio()}", style = theme.bodyText)
+                FilaMovimiento(
+                    fecha = gasto.fecha.formatoDiaMesAnio(),
+                    concepto = gasto.descripcion,
+                    importe = gasto.importe,
+                    theme = theme
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
             MasBoton(
                 onClick = {
                     val cantidad = importeGasto.toDoubleOrNull()
                     if (descripcionGasto.isNotBlank() && cantidad != null) {
-                        // Crear gasto directo
                         scope.launch(Dispatchers.IO) {
                             val gasto = GastoBO(
                                 descripcion = descripcionGasto,
@@ -112,10 +147,44 @@ data class CitasListItem(
                         descripcionGasto = ""
                         importeGasto = ""
                     } else {
-                        // Abrir formulario
                         onNuevoGastoClick(bo)
                     }
                 }
+            )
+        }
+    }
+
+    // ---------- FILA TIPO TABLA (SIN CABECERA) ----------
+    @Composable
+    private fun FilaMovimiento(
+        fecha: String,
+        concepto: String,
+        importe: Double,
+        theme: AppTheme
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = theme.paddingS, vertical = 2.dp)
+        ) {
+            Text(
+                text = fecha,
+                modifier = Modifier.weight(1.2f),
+                style = theme.bodyText
+            )
+
+            Text(
+                text = concepto,
+                modifier = Modifier.weight(2.5f),
+                style = theme.bodyText,
+                maxLines = 1
+            )
+
+            Text(
+                text = "${"%.2f".format(importe)} €",
+                modifier = Modifier.weight(1f),
+                style = theme.bodyText,
+                textAlign = TextAlign.End
             )
         }
     }
