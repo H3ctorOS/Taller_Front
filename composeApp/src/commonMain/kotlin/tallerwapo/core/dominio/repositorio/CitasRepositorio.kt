@@ -83,10 +83,17 @@ class CitasRepositorio(
         val ahora = System.currentTimeMillis()
         val unaHora = 60 * 60 * 1000L // 1 hora en ms
 
+        // Suponemos que la semana actual empieza hoy (lunes)
+        val inicioSemana = ahora
+        val finSemana = inicioSemana + 4 * 24 * 60 * 60 * 1000L // lunes a viernes
+
         return CitaSemanaDTO(
-            fechaInicio = ahora,
-            fechaFin = ahora + 4 * 24 * 60 * 60 * 1000L,
             numeroSemana = 1,
+            fechaLunes = inicioSemana,
+            fechaMartes = inicioSemana + 1 * 24 * 60 * 60 * 1000L,
+            fechaMiercoles = inicioSemana + 2 * 24 * 60 * 60 * 1000L,
+            fechaJueves = inicioSemana + 3 * 24 * 60 * 60 * 1000L,
+            fechaViernes = inicioSemana + 4 * 24 * 60 * 60 * 1000L,
             citasLunes = listOf(
                 crearCitaSimulada(1, "Cita Lunes 1", 0),
                 crearCitaSimulada(2, "Cita Lunes 2", 0, 11)
@@ -112,16 +119,19 @@ class CitasRepositorio(
 
     suspend fun citasSemana(numeroSemana: Int): CitaSemanaDTO {
         val ahora = System.currentTimeMillis()
-        val unaHora = 60 * 60 * 1000L // 1 hora en ms
+        val unaHora = 60 * 60 * 1000L
 
-        // Simulación: cada semana empieza numeroSemana-1 semanas después de "ahora"
+        // Cada semana empieza numeroSemana-1 semanas después de "ahora"
         val inicioSemana = ahora + (numeroSemana - 1) * 7 * 24 * 60 * 60 * 1000L
-        val finSemana = inicioSemana + 4 * 24 * 60 * 60 * 1000L // lunes a viernes
+        val finSemana = inicioSemana + 4 * 24 * 60 * 60 * 1000L
 
         return CitaSemanaDTO(
-            fechaInicio = inicioSemana,
-            fechaFin = finSemana,
             numeroSemana = numeroSemana,
+            fechaLunes = inicioSemana,
+            fechaMartes = inicioSemana + 1 * 24 * 60 * 60 * 1000L,
+            fechaMiercoles = inicioSemana + 2 * 24 * 60 * 60 * 1000L,
+            fechaJueves = inicioSemana + 3 * 24 * 60 * 60 * 1000L,
+            fechaViernes = inicioSemana + 4 * 24 * 60 * 60 * 1000L,
             citasLunes = listOf(
                 crearCitaSimulada(100 + numeroSemana * 10 + 1, "Cita Lunes", 0),
                 crearCitaSimulada(100 + numeroSemana * 10 + 2, "Cita Lunes Extra", 0, 11)
@@ -144,6 +154,7 @@ class CitasRepositorio(
             )
         )
     }
+
 
 
 

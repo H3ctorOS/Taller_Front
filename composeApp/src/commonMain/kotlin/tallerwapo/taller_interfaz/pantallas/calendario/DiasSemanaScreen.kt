@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import tallerwapo.core.contexto.AppContexto.citasRepo
 import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
@@ -26,7 +28,7 @@ class DiasSemanaScreen : Screen {
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
         var semanaDTO by remember { mutableStateOf<CitaSemanaDTO?>(null) }
-        var semanaActual by remember { mutableStateOf(0) } // Semana resaltada
+        var semanaActual by remember { mutableStateOf(0) }
         var mostrarFormularioNuevaCita by remember { mutableStateOf(false) }
 
         // Cargar semana actual
@@ -42,13 +44,11 @@ class DiasSemanaScreen : Screen {
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
-            // Panel izquierdo con meses y semanas
+            // ─── Panel izquierdo con meses y semanas ───
             PanelMesesSemanas(
                 semanaActual = semanaActual,
                 onSemanaSeleccionada = { semanaSeleccionada ->
                     semanaActual = semanaSeleccionada
-
-                    // Cargar la semana seleccionada simulada
                     scope.launch {
                         semanaDTO = citasRepo.citasSemana(semanaSeleccionada)
                     }
@@ -57,47 +57,87 @@ class DiasSemanaScreen : Screen {
 
             Spacer(Modifier.width(8.dp))
 
-            // Panel derecho con días de la semana
+            // ─── Panel derecho con días de la semana ───
             semanaDTO?.let { s ->
-                val dias = listOf(
-                    "Lunes" to s.getLunesBO().map { CitaBoUI(it) },
-                    "Martes" to s.getMartesBO().map { CitaBoUI(it) },
-                    "Miércoles" to s.getMiercolesBO().map { CitaBoUI(it) },
-                    "Jueves" to s.getJuevesBO().map { CitaBoUI(it) },
-                    "Viernes" to s.getViernesBO().map { CitaBoUI(it) }
+                val diasConFecha = listOf(
+                    Triple("Lunes", s.fechaLunes, s.getLunesBO().map { CitaBoUI(it) }),
+                    Triple("Martes", s.fechaMartes, s.getMartesBO().map { CitaBoUI(it) }),
+                    Triple("Miércoles", s.fechaMiercoles, s.getMiercolesBO().map { CitaBoUI(it) }),
+                    Triple("Jueves", s.fechaJueves, s.getJuevesBO().map { CitaBoUI(it) }),
+                    Triple("Viernes", s.fechaViernes, s.getViernesBO().map { CitaBoUI(it) })
                 )
 
-                dias.forEach { (nombreDia, citasUI) ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+                // ─── Agrupar días por mes para mostrar el nombre del mes arriba ───
+                val diasAgrupadosPorMes = diasConFecha.groupBy { (_, fecha, _) ->
+                    monthFormat.format(Date(fecha))
+                }
+
+                // ─── Calculamos todos los días en orden para repartir equitativamente ───
+                val diasOrdenados = diasAgrupadosPorMes.flatMap { it.value }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // ─── Fila de nombres de meses ───
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        diasAgrupadosPorMes.forEach { (mes, diasMes) ->
+                            // Cada mes ocupa el ancho proporcional al número de días que tiene
+                            Row(
+                                modifier = Modifier.weight(diasMes.size.toFloat())
+                            ) {
+                                AppTextos(
+                                    text = mes,
+                                    style = theme.subTitleText,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // ─── Fila de días y citas ───
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AppTextos(
-                            text = nombreDia,
-                            style = theme.title,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                        diasOrdenados.forEach { (nombreDia, fecha, citasUI) ->
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            ) {
+                                val diaNumero = dayFormat.format(Date(fecha))
+                                AppTextos(
+                                    text = "$nombreDia $diaNumero",
+                                    style = theme.title,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
 
-                        Spacer(Modifier.height(4.dp))
+                                Spacer(Modifier.height(4.dp))
 
-                        ListaCitas(
-                            listaCitasUI = citasUI,
-                            citaSeleccionada = null,
-                            onCitaSeleccionada = {},
-                            onCitaDoubleClick = null,
-                            onNewClick = { mostrarFormularioNuevaCita = true },
-                            onNuevoIngresoClick = {},
-                            onNuevoGastoClick = {},
-                            mostrarNew = true,
-                            modifier = Modifier.fillMaxHeight()
-                        )
+                                ListaCitas(
+                                    listaCitasUI = citasUI,
+                                    citaSeleccionada = null,
+                                    onCitaSeleccionada = {},
+                                    onCitaDoubleClick = null,
+                                    onNewClick = { mostrarFormularioNuevaCita = true },
+                                    onNuevoIngresoClick = {},
+                                    onNuevoGastoClick = {},
+                                    mostrarNew = true,
+                                    modifier = Modifier.fillMaxHeight()
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // --- Formulario nueva cita ---
+        // ─── Formulario nueva cita ───
         FormularioEmergente(
             mostrar = mostrarFormularioNuevaCita,
             onCerrar = { mostrarFormularioNuevaCita = false }
