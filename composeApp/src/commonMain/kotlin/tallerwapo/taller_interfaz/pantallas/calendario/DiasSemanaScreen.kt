@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import tallerwapo.core.contexto.AppContexto.citasRepo
 import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
+import tallerwapo.core.dominio.dto.calendario.DiaSemana
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
 import tallerwapo.taller_interfaz.objetos.listables.listas.ListaCitas
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
@@ -59,13 +60,17 @@ class DiasSemanaScreen : Screen {
 
             // ─── Panel derecho con días de la semana ───
             semanaDTO?.let { s ->
-                val diasConFecha = listOf(
-                    Triple("Lunes", s.fechaLunes, s.getLunesBO().map { CitaBoUI(it) }),
-                    Triple("Martes", s.fechaMartes, s.getMartesBO().map { CitaBoUI(it) }),
-                    Triple("Miércoles", s.fechaMiercoles, s.getMiercolesBO().map { CitaBoUI(it) }),
-                    Triple("Jueves", s.fechaJueves, s.getJuevesBO().map { CitaBoUI(it) }),
-                    Triple("Viernes", s.fechaViernes, s.getViernesBO().map { CitaBoUI(it) })
-                )
+                // Lista de días que queremos mostrar (lunes a viernes)
+                val dias = listOf(DiaSemana.LUNES, DiaSemana.MARTES, DiaSemana.MIERCOLES, DiaSemana.JUEVES, DiaSemana.VIERNES)
+
+                // Crear lista de triples: nombre del día, fecha, lista de citas UI
+                val diasConFecha = dias.map { dia ->
+                    Triple(
+                        dia.name.capitalize(Locale.getDefault()),  // "LUNES" -> "Lunes"
+                        s.fechas[dia] ?: -1L,
+                        s.getCitasBO(dia).map { CitaBoUI(it) }
+                    )
+                }
 
                 val dayFormat = SimpleDateFormat("d", Locale.getDefault())
                 val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())

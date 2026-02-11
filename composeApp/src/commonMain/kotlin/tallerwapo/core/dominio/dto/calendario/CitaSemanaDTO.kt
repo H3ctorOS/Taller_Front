@@ -4,34 +4,42 @@ import kotlinx.serialization.Serializable
 import tallerwapo.core.dominio.bo.CitaBO
 import tallerwapo.core.dominio.dto.CitaDTO
 
+// Enum propio para los días de la semana (compatible con minSdk 24)
+enum class DiaSemana(val valor: Int) {
+    LUNES(1),
+    MARTES(2),
+    MIERCOLES(3),
+    JUEVES(4),
+    VIERNES(5),
+    SABADO(6),
+    DOMINGO(7)
+}
+
 @Serializable
 data class CitaSemanaDTO(
     val numeroSemana: Int,
-
-    val fechaLunes: Long,
-    val fechaMartes: Long,
-    val fechaMiercoles: Long,
-    val fechaJueves: Long,
-    val fechaViernes: Long,
-
-    val citasLunes: List<CitaDTO> = emptyList(),
-    val citasMartes: List<CitaDTO> = emptyList(),
-    val citasMiercoles: List<CitaDTO> = emptyList(),
-    val citasJueves: List<CitaDTO> = emptyList(),
-    val citasViernes: List<CitaDTO> = emptyList()
+    val fechas: Map<DiaSemana, Long> = emptyMap(),
+    val citas: Map<DiaSemana, List<CitaDTO>> = emptyMap()
 ) {
 
     // ───────── Métodos para obtener BO ─────────
-    fun getLunesBO(): List<CitaBO> = citasLunes.map { CitaBO(it) }
-    fun getMartesBO(): List<CitaBO> = citasMartes.map { CitaBO(it) }
-    fun getMiercolesBO(): List<CitaBO> = citasMiercoles.map { CitaBO(it) }
-    fun getJuevesBO(): List<CitaBO> = citasJueves.map { CitaBO(it) }
-    fun getViernesBO(): List<CitaBO> = citasViernes.map { CitaBO(it) }
+    fun getCitasBO(dia: DiaSemana): List<CitaBO> =
+        citas[dia]?.map { CitaBO(it) } ?: emptyList()
+
+    // Métodos específicos por día (compatibilidad con código antiguo)
+    fun getLunesBO() = getCitasBO(DiaSemana.LUNES)
+    fun getMartesBO() = getCitasBO(DiaSemana.MARTES)
+    fun getMiercolesBO() = getCitasBO(DiaSemana.MIERCOLES)
+    fun getJuevesBO() = getCitasBO(DiaSemana.JUEVES)
+    fun getViernesBO() = getCitasBO(DiaSemana.VIERNES)
 
     // ───────── Métodos para obtener pares fecha + citas ─────────
-    fun getLunesConFecha() = fechaLunes to getLunesBO()
-    fun getMartesConFecha() = fechaMartes to getMartesBO()
-    fun getMiercolesConFecha() = fechaMiercoles to getMiercolesBO()
-    fun getJuevesConFecha() = fechaJueves to getJuevesBO()
-    fun getViernesConFecha() = fechaViernes to getViernesBO()
+    fun getFechaConCitas(dia: DiaSemana): Pair<Long, List<CitaBO>> =
+        (fechas[dia] ?: -1L) to getCitasBO(dia)
+
+    fun getLunesConFecha() = getFechaConCitas(DiaSemana.LUNES)
+    fun getMartesConFecha() = getFechaConCitas(DiaSemana.MARTES)
+    fun getMiercolesConFecha() = getFechaConCitas(DiaSemana.MIERCOLES)
+    fun getJuevesConFecha() = getFechaConCitas(DiaSemana.JUEVES)
+    fun getViernesConFecha() = getFechaConCitas(DiaSemana.VIERNES)
 }
