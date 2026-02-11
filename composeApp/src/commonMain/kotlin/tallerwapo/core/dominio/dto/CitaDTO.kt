@@ -17,7 +17,9 @@ data class CitaDTO(
     val codigoEstado: String,
     val observaciones: String?,
     val ingresos: List<IngresoDTO>? = null,
-    val gastos: List<GastoDTO>? = null
+    val gastos: List<GastoDTO>? = null,
+    val vehiculo:VehiculoDTO? = null,
+
 ) {
     // Constructor secundario desde BO
     constructor(bo: CitaBO) : this(

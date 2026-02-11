@@ -12,7 +12,8 @@ data class VehiculoDTO(
     val marca: String = "",
     val modelo: String = "",
     val estado: String = "",
-    val observaciones: String = ""
+    val observaciones: String = "",
+    val propietario: ClienteDTO? = null,
 ){
     // Constructor secundario desde BO
     constructor(bo: VehiculoBO) : this(

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tallerwapo.core.servicios.CalendarioService
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
@@ -26,14 +27,14 @@ fun PanelMesesSemanas(
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
-    val meses = listOf(
+    val mesesNombres = listOf(
         "Enero", "Febrero", "Marzo", "Abril",
         "Mayo", "Junio", "Julio", "Agosto",
         "Septiembre", "Octubre", "Noviembre", "Diciembre"
     )
 
-    // Contador de semana global (aproximadamente 4 semanas por mes)
-    var semanaNumero = 1
+    // Obtenemos las semanas del año actual directamente del service
+    val semanasDelAnioDTO = CalendarioService.getSemanasDelActual()
 
     Box(
         modifier = Modifier
@@ -42,14 +43,16 @@ fun PanelMesesSemanas(
             .padding(4.dp)
     ) {
         ScrollableContent {
-            meses.forEach { mes ->
+            // Recorremos los meses del DTO (1..12)
+            semanasDelAnioDTO.semanasPorMes.toSortedMap().forEach { (mesNum, semanas) ->
                 Column(
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                 ) {
-                    // ─── Nombre del mes centrado ───
+                    // Nombre del mes centrado
+                    val nombreMes = mesesNombres.getOrNull(mesNum - 1) ?: "Mes $mesNum"
                     AppTextos(
-                        text = mes,
+                        text = nombreMes,
                         style = theme.subTitleText,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
@@ -57,8 +60,8 @@ fun PanelMesesSemanas(
                     Spacer(Modifier.height(4.dp))
 
                     // ─── Semanas del mes ───
-                    repeat(4) { _ ->
-                        val actualSemana = semanaNumero
+                    semanas.forEach { semana ->
+                        val actualSemana = semana.numeroSemana
                         val isSemanaActual = actualSemana == semanaActual
 
                         Box(
@@ -79,11 +82,10 @@ fun PanelMesesSemanas(
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
-
-                        semanaNumero++
                     }
                 }
             }
         }
     }
 }
+
