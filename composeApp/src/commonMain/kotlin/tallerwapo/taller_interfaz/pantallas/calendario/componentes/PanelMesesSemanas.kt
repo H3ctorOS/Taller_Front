@@ -33,7 +33,7 @@ fun PanelMesesSemanas(
         "Septiembre", "Octubre", "Noviembre", "Diciembre"
     )
 
-    // Obtenemos las semanas del año actual directamente del service
+    // Obtenemos semanas del año actual desde el service
     val semanasDelAnioDTO = CalendarioService.getSemanasDelActual()
 
     Box(
@@ -43,12 +43,9 @@ fun PanelMesesSemanas(
             .padding(4.dp)
     ) {
         ScrollableContent {
-            // Recorremos los meses del DTO (1..12)
+            // Recorremos los meses según el DTO
             semanasDelAnioDTO.semanasPorMes.toSortedMap().forEach { (mesNum, semanas) ->
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                ) {
+                Column(modifier = Modifier.padding(vertical = 4.dp)) {
                     // Nombre del mes centrado
                     val nombreMes = mesesNombres.getOrNull(mesNum - 1) ?: "Mes $mesNum"
                     AppTextos(
@@ -88,4 +85,3 @@ fun PanelMesesSemanas(
         }
     }
 }
-
