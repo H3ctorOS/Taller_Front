@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.pantallas.calendario.DiasSemanaScreen
 import tallerwapo.taller_interfaz.pantallas.clientes.ClientesScreen
 import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
@@ -35,12 +36,23 @@ fun AppSidebar(
         Spacer(Modifier.height(theme.paddingL))
 
         SidebarItem(
+            id = SidebarItemId.PRUEBAS,
+            "pruebas",
+            selectedItem = selectedItem
+        ) {
+            selectedItem = SidebarItemId.PRUEBAS
+            onScreenSelected(PruebasScreen())
+        }
+
+        Spacer(Modifier.height(theme.paddingL))
+
+        SidebarItem(
             id = SidebarItemId.CALENDARIO,
-            "Calendario",
+            "calendario",
             selectedItem = selectedItem
         ) {
             selectedItem = SidebarItemId.CALENDARIO
-            onScreenSelected(PruebasScreen())
+            onScreenSelected(DiasSemanaScreen())
         }
 
         Spacer(Modifier.height(theme.paddingL))
@@ -119,6 +131,7 @@ private fun SidebarItem(
 
 
 enum class SidebarItemId {
+    PRUEBAS,
     CALENDARIO,
     CLIENTES,
     VEHICULOS,

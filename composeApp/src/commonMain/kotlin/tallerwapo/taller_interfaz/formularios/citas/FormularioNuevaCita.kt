@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.setSelectedDate
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,11 +24,13 @@ import tallerwapo.taller_interfaz.objetos.campoEntrada.*
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
+
 @Suppress("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioNuevaCita(
     vehiculo: VehiculoBO? = null,
+    fechaInicioPredeterminada: Instant? = null, // <-- nuevo parámetro opcional
     onCerrar: () -> Unit
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
@@ -37,15 +40,23 @@ fun FormularioNuevaCita(
     var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
     var concepto by remember { mutableStateOf("") }
     var vehiculoSelccionado by remember { mutableStateOf<VehiculoBO?>(vehiculo) }
-    var fechaInicio by remember { mutableStateOf<Instant>(Clock.System.now()) }
-    var fechaFin by remember { mutableStateOf<Instant>(Clock.System.now() + 2.days) }
-    var observaciones by remember { mutableStateOf("") }
 
+    // Usar la fecha predeterminada si se pasa, sino la actual
+    var fechaInicio by remember { mutableStateOf(fechaInicioPredeterminada ?: Clock.System.now()) }
+    var fechaFin by remember { mutableStateOf(fechaInicio + 2.days) }
+
+    var observaciones by remember { mutableStateOf("") }
     var mostrarPickerInicio by remember { mutableStateOf(false) }
     var mostrarPickerFin by remember { mutableStateOf(false) }
 
-    val datePickerStateInicio = rememberDatePickerState()
-    val datePickerStateFin = rememberDatePickerState()
+    // DatePickerStates con fecha inicial
+    val datePickerStateInicio = rememberDatePickerState(
+        initialSelectedDateMillis = fechaInicio.toEpochMilliseconds()
+    )
+    val datePickerStateFin = rememberDatePickerState(
+        initialSelectedDateMillis = fechaFin.toEpochMilliseconds()
+    )
+
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -113,7 +124,6 @@ fun FormularioNuevaCita(
 
                 Spacer(Modifier.height(theme.paddingS))
 
-                // ───────── CAMPO OBLIGATORIO ─────────
                 CampoEntradaRow(
                     titulo = "Concepto",
                     valor = concepto,

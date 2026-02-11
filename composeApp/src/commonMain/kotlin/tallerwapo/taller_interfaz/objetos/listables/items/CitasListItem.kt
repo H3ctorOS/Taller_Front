@@ -10,7 +10,6 @@ import kotlin.time.Clock
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.GastoBO
 import tallerwapo.core.dominio.bo.IngresoBO
-import tallerwapo.core.servicios.formatoDiaMesAnio
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
 import tallerwapo.taller_interfaz.objetos.botones.MasBoton
@@ -19,6 +18,7 @@ import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import tallerwapo.taller_interfaz.themes.interfaces.AppTheme
 import androidx.compose.ui.Alignment
+import tallerwapo.core.servicios.CalendarioService
 
 data class CitasListItem(
     override val bo: CitaBoUI,
@@ -27,7 +27,10 @@ data class CitasListItem(
 ) : ListableBO<CitaBoUI> {
 
     override val titulo: String = bo.cita.concepto
-    override val subtitulo: String = "${bo.cita.fechaInicio.formatoDiaMesAnio()}    →    ${bo.cita.fechaFinalizada.formatoDiaMesAnio()}"
+    override val subtitulo: String =
+        "${CalendarioService.formatoDiaMesAnio(bo.cita.fechaInicio)}    →    ${
+            CalendarioService.formatoDiaMesAnio(bo.cita.fechaFinalizada)
+        }"
     override val descripcion: String? = bo.cita.observaciones
 
     @Composable
@@ -121,7 +124,7 @@ data class CitasListItem(
 
             bo.ingresos.forEach { ingreso ->
                 FilaMovimiento(
-                    fecha = ingreso.fecha.formatoDiaMesAnio(),
+                    fecha =  CalendarioService.formatoDiaMesAnio(ingreso.fecha),
                     concepto = ingreso.concepto,
                     importe = ingreso.importe,
                     theme = theme
@@ -174,7 +177,7 @@ data class CitasListItem(
 
             bo.gastos.forEach { gasto ->
                 FilaMovimiento(
-                    fecha = gasto.fecha.formatoDiaMesAnio(),
+                    fecha =  CalendarioService.formatoDiaMesAnio(gasto.fecha),
                     concepto = gasto.descripcion,
                     importe = gasto.importe,
                     theme = theme

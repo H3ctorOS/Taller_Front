@@ -25,8 +25,6 @@ fun ListableBOCard(
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
     val scope = rememberCoroutineScope()
     var lastClickTime by remember { mutableStateOf(0L) }
-
-    // Estado para controlar si el card está expandido
     var expandido by remember { mutableStateOf(false) }
 
     val backgroundColor = if (isSelected) {
@@ -35,7 +33,7 @@ fun ListableBOCard(
         theme.surfaceColor
     }
 
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(theme.paddingS)
@@ -50,7 +48,6 @@ fun ListableBOCard(
                         val thisClickTime = currentTime
                         delay(doubleClickDelay)
                         if (lastClickTime == thisClickTime) {
-                            // Click simple: alterna expandido
                             expandido = !expandido
                             onClick()
                         }
@@ -58,29 +55,66 @@ fun ListableBOCard(
                     lastClickTime = currentTime
                 }
             }
-            .animateContentSize(), // animación suave al expandir/colapsar
-        horizontalAlignment = Alignment.CenterHorizontally
+            .animateContentSize()
+            .padding(theme.paddingS),
+        verticalAlignment = Alignment.Top
     ) {
-        Spacer(Modifier.height(theme.paddingS))
 
-        AppTextos(text = item.titulo, style = theme.subTitleText)
+        if (item.contenidoExtra != null) {
+            // ------------------ CONTENIDO IZQUIERDO CON contenidoExtra ------------------
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                AppTextos(text = item.titulo, style = theme.subTitleText)
 
-        item.subtitulo?.let {
-            Spacer(Modifier.height(theme.paddingS))
-            AppTextos(text = it, style = theme.bodyText)
+                item.subtitulo?.let {
+                    Spacer(Modifier.height(theme.paddingS))
+                    AppTextos(text = it, style = theme.bodyText)
+                }
+
+                item.descripcion?.let {
+                    Spacer(Modifier.height(theme.paddingS))
+                    AppTextos(text = it, style = theme.bodyText)
+                }
+
+                if (expandido) {
+                    Spacer(Modifier.height(theme.paddingS))
+                    item.ContenidoDesplegable()
+                }
+            }
+
+            // ------------------ CONTENIDO EXTRA DERECHA ------------------
+            Spacer(Modifier.width(theme.paddingS))
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Top
+            ) {
+                //item.contenidoExtra()
+            }
+
+        } else {
+            // ------------------ CONTENIDO PRINCIPAL CENTRADO ------------------
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppTextos(text = item.titulo, style = theme.subTitleText)
+
+                item.subtitulo?.let {
+                    Spacer(Modifier.height(theme.paddingS))
+                    AppTextos(text = it, style = theme.bodyText)
+                }
+
+                item.descripcion?.let {
+                    Spacer(Modifier.height(theme.paddingS))
+                    AppTextos(text = it, style = theme.bodyText)
+                }
+
+                if (expandido) {
+                    Spacer(Modifier.height(theme.paddingS))
+                    item.ContenidoDesplegable()
+                }
+            }
         }
-
-        item.descripcion?.let {
-            Spacer(Modifier.height(theme.paddingS))
-            AppTextos(text = it, style = theme.bodyText)
-        }
-
-        // Contenido desplegable
-        if (expandido) {
-            Spacer(Modifier.height(theme.paddingS))
-            item.ContenidoDesplegable()
-        }
-
-        Spacer(Modifier.height(theme.paddingS))
     }
 }

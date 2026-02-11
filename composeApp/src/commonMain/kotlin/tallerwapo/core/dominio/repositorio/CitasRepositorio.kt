@@ -6,7 +6,9 @@ import tallerwapo.core.dominio.bo.VehiculoBO
 import tallerwapo.core.dominio.dto.CitaDTO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.core.dominio.dto.VehiculoDTO
+import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
 import tallerwapo.core.utils.Logs
+
 
 class CitasRepositorio(
     private val apiRest: CitasApi
@@ -76,4 +78,53 @@ class CitasRepositorio(
         Logs.info(this, "Cantidad de citas recibidas: ${boList.size}")
         return respuestaBO
     }
+
+    suspend fun citasSemanaActual(): CitaSemanaDTO {
+        val ahora = System.currentTimeMillis()
+        val unaHora = 60 * 60 * 1000L // 1 hora en ms
+
+        return CitaSemanaDTO(
+            fechaInicio = ahora,
+            fechaFin = ahora + 4 * 24 * 60 * 60 * 1000L,
+            numeroSemana = 1,
+            citasLunes = listOf(
+                crearCitaSimulada(1, "Cita Lunes 1", 0),
+                crearCitaSimulada(2, "Cita Lunes 2", 0, 11)
+            ),
+            citasMartes = listOf(
+                crearCitaSimulada(3, "Cita Martes 1", 1),
+                crearCitaSimulada(4, "Cita Martes 2", 1, 11)
+            ),
+            citasMiercoles = listOf(
+                crearCitaSimulada(5, "Cita Miércoles 1", 2),
+                crearCitaSimulada(6, "Cita Miércoles 2", 2, 11)
+            ),
+            citasJueves = listOf(
+                crearCitaSimulada(7, "Cita Jueves 1", 3),
+                crearCitaSimulada(8, "Cita Jueves 2", 3, 11)
+            ),
+            citasViernes = listOf(
+                crearCitaSimulada(9, "Cita Viernes 1", 4),
+                crearCitaSimulada(10, "Cita Viernes 2", 4, 11)
+            )
+        )
+    }
+
+    fun crearCitaSimulada(id: Int, concepto: String, diasOffset: Long, horaInicio: Long = 9): CitaDTO {
+        val ahora = System.currentTimeMillis()
+        val unaHora = 60 * 60 * 1000L // 1 hora en ms
+
+        val inicio = ahora + diasOffset * 24 * 60 * 60 * 1000L + horaInicio * unaHora
+        val fin = inicio + unaHora
+        return CitaDTO(
+            uuid = id,
+            vehiculoUuid = 1,
+            concepto = concepto,
+            fechaInicio = inicio,
+            fechaFinalizada = fin,
+            codigoEstado = "ACTIVO",
+            observaciones = "Observación de prueba"
+        )
+    }
+
 }

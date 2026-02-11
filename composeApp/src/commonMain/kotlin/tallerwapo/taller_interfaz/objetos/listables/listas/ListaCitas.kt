@@ -33,7 +33,7 @@ fun ListaCitas(
             ) {
                 AppTextos(
                     text = "Citas",
-                    style = theme.title,
+                    style = theme.subTitleText,
                     modifier = Modifier.alignByBaseline()
                 )
                 Spacer(Modifier.width(theme.paddingS))

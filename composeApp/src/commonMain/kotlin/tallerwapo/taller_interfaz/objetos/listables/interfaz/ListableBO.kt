@@ -11,13 +11,25 @@ interface ListableBO<T : BaseBO> {
     val subtitulo: String?
     val descripcion: String?
 
+
     /**
-     * Contenido desplegable opcional que se mostrará
-     * debajo de la card cuando esté expandida.
-     * Por defecto no se muestra nada.
+     * Contenido desplegable opcional que se muestra
+     * solo cuando la card está expandida.
      */
     @Composable
     fun ContenidoDesplegable() {
         // vacío por defecto
+    }
+
+    /**
+     * Contenido extra opcional que se muestra siempre
+     * a la derecha de la card.
+     */
+    val contenidoExtra: (@Composable () -> Unit)?
+        get() = null
+
+    @Composable
+    fun ContenidoExtra() {
+        contenidoExtra?.invoke()
     }
 }

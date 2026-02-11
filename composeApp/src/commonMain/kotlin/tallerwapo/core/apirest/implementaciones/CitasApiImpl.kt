@@ -6,6 +6,7 @@ import tallerwapo.core.dominio.dto.VehiculoDTO
 import tallerwapo.core.apirest.ApiConfig.BASE_URL
 import tallerwapo.core.apirest.ApiRest
 import tallerwapo.core.apirest.interfaces.CitasApi
+import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
 
 class CitasApiImpl : CitasApi {
 
@@ -27,5 +28,9 @@ class CitasApiImpl : CitasApi {
             url = BASE_URL + BUSCAR_POR_VEHICULO,
             params = mapOf("vehiculoUuid" to vehiculo.uuid)
         )
+    }
+
+    override suspend fun citasSemanaActual(): CitaSemanaDTO {
+        TODO("Not yet implemented")
     }
 }
