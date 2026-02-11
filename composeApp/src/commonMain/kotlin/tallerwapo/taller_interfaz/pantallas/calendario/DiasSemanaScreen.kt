@@ -2,11 +2,11 @@ package tallerwapo.taller_interfaz.pantallas.calendario
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import androidx.compose.ui.Alignment
-import kotlin.time.Instant
+import kotlinx.coroutines.launch
 import tallerwapo.core.contexto.AppContexto.citasRepo
 import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
 import tallerwapo.taller_interfaz.boDeInterfaz.CitaBoUI
@@ -16,6 +16,7 @@ import tallerwapo.taller_interfaz.themes.AppThemeProvider
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
+import tallerwapo.taller_interfaz.pantallas.calendario.componentes.PanelMesesSemanas
 
 class DiasSemanaScreen : Screen {
 
@@ -24,24 +25,40 @@ class DiasSemanaScreen : Screen {
         val scope = rememberCoroutineScope()
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
-        var semana by remember { mutableStateOf<CitaSemanaDTO?>(null) }
-
-        // Formulario
+        var semanaDTO by remember { mutableStateOf<CitaSemanaDTO?>(null) }
+        var semanaActual by remember { mutableStateOf(0) } // Semana resaltada
         var mostrarFormularioNuevaCita by remember { mutableStateOf(false) }
-        var fechaInicioPredeterminada by remember { mutableStateOf<Instant?>(null) }
 
-        // Cargar semana
+        // Cargar semana actual
         LaunchedEffect(Unit) {
-            semana = citasRepo.citasSemanaActual()
+            semanaDTO = citasRepo.citasSemanaActual()
+            semanaDTO?.let { s ->
+                semanaActual = s.numeroSemana
+            }
         }
 
-        semana?.let { s ->
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            // Panel izquierdo con meses y semanas
+            PanelMesesSemanas(
+                semanaActual = semanaActual,
+                onSemanaSeleccionada = { semanaSeleccionada ->
+                    semanaActual = semanaSeleccionada
+
+                    // Cargar la semana seleccionada simulada
+                    scope.launch {
+                        semanaDTO = citasRepo.citasSemana(semanaSeleccionada)
+                    }
+                }
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            // Panel derecho con días de la semana
+            semanaDTO?.let { s ->
                 val dias = listOf(
                     "Lunes" to s.getLunesBO().map { CitaBoUI(it) },
                     "Martes" to s.getMartesBO().map { CitaBoUI(it) },
@@ -56,12 +73,11 @@ class DiasSemanaScreen : Screen {
                             .weight(1f)
                             .fillMaxHeight()
                     ) {
-                        Box(
-                                modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                        ) {
-                        AppTextos(nombreDia, style = theme.title)
-                    }
+                        AppTextos(
+                            text = nombreDia,
+                            style = theme.title,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
 
                         Spacer(Modifier.height(4.dp))
 
@@ -69,18 +85,8 @@ class DiasSemanaScreen : Screen {
                             listaCitasUI = citasUI,
                             citaSeleccionada = null,
                             onCitaSeleccionada = {},
-                            onCitaDoubleClick = {
-                                // Abrir formulario nueva cita con fecha del día
-                                fechaInicioPredeterminada = it.cita.fechaInicio
-                                mostrarFormularioNuevaCita = true
-                            },
-                            onNewClick = {
-                                // Abrir formulario nueva cita con fecha del día de la columna
-                                // Tomamos el primer elemento como referencia de fecha, si hay
-                                val primeraFecha: Instant? = citasUI.firstOrNull()?.cita?.fechaInicio
-                                fechaInicioPredeterminada = primeraFecha
-                                mostrarFormularioNuevaCita = true
-                            },
+                            onCitaDoubleClick = null,
+                            onNewClick = { mostrarFormularioNuevaCita = true },
                             onNuevoIngresoClick = {},
                             onNuevoGastoClick = {},
                             mostrarNew = true,
@@ -97,7 +103,6 @@ class DiasSemanaScreen : Screen {
             onCerrar = { mostrarFormularioNuevaCita = false }
         ) {
             FormularioNuevaCita(
-                fechaInicioPredeterminada = fechaInicioPredeterminada,
                 onCerrar = { mostrarFormularioNuevaCita = false }
             )
         }

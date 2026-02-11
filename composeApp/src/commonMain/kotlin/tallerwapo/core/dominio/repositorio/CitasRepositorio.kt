@@ -110,6 +110,43 @@ class CitasRepositorio(
         )
     }
 
+    suspend fun citasSemana(numeroSemana: Int): CitaSemanaDTO {
+        val ahora = System.currentTimeMillis()
+        val unaHora = 60 * 60 * 1000L // 1 hora en ms
+
+        // Simulación: cada semana empieza numeroSemana-1 semanas después de "ahora"
+        val inicioSemana = ahora + (numeroSemana - 1) * 7 * 24 * 60 * 60 * 1000L
+        val finSemana = inicioSemana + 4 * 24 * 60 * 60 * 1000L // lunes a viernes
+
+        return CitaSemanaDTO(
+            fechaInicio = inicioSemana,
+            fechaFin = finSemana,
+            numeroSemana = numeroSemana,
+            citasLunes = listOf(
+                crearCitaSimulada(100 + numeroSemana * 10 + 1, "Cita Lunes", 0),
+                crearCitaSimulada(100 + numeroSemana * 10 + 2, "Cita Lunes Extra", 0, 11)
+            ),
+            citasMartes = listOf(
+                crearCitaSimulada(200 + numeroSemana * 10 + 1, "Cita Martes", 1),
+                crearCitaSimulada(200 + numeroSemana * 10 + 2, "Cita Martes Extra", 1, 11)
+            ),
+            citasMiercoles = listOf(
+                crearCitaSimulada(300 + numeroSemana * 10 + 1, "Cita Miércoles", 2),
+                crearCitaSimulada(300 + numeroSemana * 10 + 2, "Cita Miércoles Extra", 2, 11)
+            ),
+            citasJueves = listOf(
+                crearCitaSimulada(400 + numeroSemana * 10 + 1, "Cita Jueves", 3),
+                crearCitaSimulada(400 + numeroSemana * 10 + 2, "Cita Jueves Extra", 3, 11)
+            ),
+            citasViernes = listOf(
+                crearCitaSimulada(500 + numeroSemana * 10 + 1, "Cita Viernes", 4),
+                crearCitaSimulada(500 + numeroSemana * 10 + 2, "Cita Viernes Extra", 4, 11)
+            )
+        )
+    }
+
+
+
     fun crearCitaSimulada(id: Int, concepto: String, diasOffset: Long, horaInicio: Long = 9): CitaDTO {
         val ahora = System.currentTimeMillis()
         val unaHora = 60 * 60 * 1000L // 1 hora en ms
