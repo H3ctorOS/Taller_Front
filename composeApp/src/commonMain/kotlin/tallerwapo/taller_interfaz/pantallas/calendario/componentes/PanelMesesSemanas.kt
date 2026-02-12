@@ -5,9 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import tallerwapo.core.dominio.dto.calendario.SemanasDelAnioDTO
 import tallerwapo.core.servicios.CalendarioService
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
@@ -33,8 +41,13 @@ fun PanelMesesSemanas(
         "Septiembre", "Octubre", "Noviembre", "Diciembre"
     )
 
-    // Obtenemos semanas del año actual desde el service
-    val semanasDelAnioDTO = CalendarioService.getSemanasDelActual()
+    // Estado donde guardamos el DTO
+    var semanasDelAnioDTO by remember { mutableStateOf<SemanasDelAnioDTO?>(null) }
+
+    // Carga controlada por Compose
+    LaunchedEffect(Unit) {
+        semanasDelAnioDTO = CalendarioService.getSemanasAnioActual()
+    }
 
     Box(
         modifier = Modifier
@@ -44,7 +57,7 @@ fun PanelMesesSemanas(
     ) {
         ScrollableContent {
             // Recorremos los meses según el DTO
-            semanasDelAnioDTO.semanasPorMes.toSortedMap().forEach { (mesNum, semanas) ->
+            semanasDelAnioDTO?.semanasPorMes?.toSortedMap()?.forEach { (mesNum, semanas) ->
                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
                     // Nombre del mes centrado
                     val nombreMes = mesesNombres.getOrNull(mesNum - 1) ?: "Mes $mesNum"

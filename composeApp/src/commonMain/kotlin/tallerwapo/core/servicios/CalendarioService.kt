@@ -1,5 +1,6 @@
 package tallerwapo.core.servicios
 
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.dto.calendario.SemanaSelectorDTO
 import tallerwapo.core.dominio.dto.calendario.SemanasDelAnioDTO
 import java.time.ZoneId
@@ -18,35 +19,16 @@ object CalendarioService {
         return zdt.format(formatterDiaMesAnio)
     }
 
-    /* -------------------------------------------------------
-       ENUM DIAS LABORALES
-    ------------------------------------------------------- */
 
-    enum class DiaSemana {
-        LUNES,
-        MARTES,
-        MIERCOLES,
-        JUEVES,
-        VIERNES
+    fun getAnioActual(): Int {
+        return java.time.ZonedDateTime.now(zone).year
     }
 
 
+     suspend fun getSemanasAnioActual(): SemanasDelAnioDTO? {
+        val api = AppContexto.gestionServidorApi
 
-    fun getSemanasDelActual(): SemanasDelAnioDTO {
-        val anio = 2026
-        val semanasPorMes = mutableMapOf<Int, List<SemanaSelectorDTO>>()
-
-        // Simulación: 4 semanas por mes
-        for (mes in 1..12) {
-            val semanas = mutableListOf<SemanaSelectorDTO>()
-            for (semanaNum in 1..4) {
-                // Creamos la semana simulada, combinando número de semana y año
-                semanas.add(SemanaSelectorDTO(numeroSemana = semanaNum + (mes - 1) * 4, anio = anio))
-            }
-            semanasPorMes[mes] = semanas
-        }
-
-        return SemanasDelAnioDTO(semanasPorMes)
+        return api.getSemanasAnio(getAnioActual())
     }
 
 
