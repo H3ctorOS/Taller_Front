@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import tallerwapo.core.dominio.dto.calendario.SemanasDelAnioDTO
 import tallerwapo.core.servicios.CalendarioService
 import tallerwapo.taller_interfaz.objetos.scroll.ScrollableContent
@@ -30,23 +29,30 @@ import tallerwapo.taller_interfaz.InterfazContext
  */
 @Composable
 fun PanelMesesSemanas(
-    semanaActual: Int,
     onSemanaSeleccionada: (Int) -> Unit = {}
 ) {
     val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
-
     val mesesNombres = listOf(
-        "Enero", "Febrero", "Marzo", "Abril",
-        "Mayo", "Junio", "Julio", "Agosto",
-        "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        "Enero","Febrero","Marzo","Abril",
+        "Mayo","Junio","Julio","Agosto",
+        "Septiembre","Octubre","Noviembre","Diciembre"
     )
 
-    // Estado donde guardamos el DTO
     var semanasDelAnioDTO by remember { mutableStateOf<SemanasDelAnioDTO?>(null) }
+    var semanaSeleccionada by remember { mutableStateOf<Int?>(null) } // Estado interno de la semana seleccionada
 
-    // Carga controlada por Compose
     LaunchedEffect(Unit) {
         semanasDelAnioDTO = CalendarioService.getSemanasAnioActual()
+
+        // ─── Seleccionar automáticamente la semana actual al cargar ───
+        semanasDelAnioDTO?.semanasPorMes
+            ?.values
+            ?.flatten()
+            ?.firstOrNull { it.esActual }
+            ?.let { semanaActual ->
+                semanaSeleccionada = semanaActual.numeroSemana
+                onSemanaSeleccionada(semanaActual.numeroSemana)
+            }
     }
 
     Box(
@@ -56,10 +62,8 @@ fun PanelMesesSemanas(
             .padding(4.dp)
     ) {
         ScrollableContent {
-            // Recorremos los meses según el DTO
             semanasDelAnioDTO?.semanasPorMes?.toSortedMap()?.forEach { (mesNum, semanas) ->
                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                    // Nombre del mes centrado
                     val nombreMes = mesesNombres.getOrNull(mesNum - 1) ?: "Mes $mesNum"
                     AppTextos(
                         text = nombreMes,
@@ -69,10 +73,16 @@ fun PanelMesesSemanas(
 
                     Spacer(Modifier.height(4.dp))
 
-                    // ─── Semanas del mes ───
                     semanas.forEach { semana ->
-                        val actualSemana = semana.numeroSemana
-                        val isSemanaActual = actualSemana == semanaActual
+                        val isSemanaActual = semana.esActual
+                        val isSeleccionada = semana.numeroSemana == semanaSeleccionada
+
+                        // ─── Elegir color según estado ───
+                        val backgroundColor = when {
+                            isSeleccionada -> theme.selectedBackgroundColor // Usuario seleccionó
+                            isSemanaActual -> theme.selectedBackgroundColor.copy(alpha = 0.3f) // Semana real del servidor (suave)
+                            else -> theme.surfaceColor
+                        }
 
                         Box(
                             modifier = Modifier
@@ -80,14 +90,17 @@ fun PanelMesesSemanas(
                                 .padding(vertical = 2.dp)
                                 .height(24.dp)
                                 .background(
-                                    color = if (isSemanaActual) theme.selectedBackgroundColor else theme.surfaceColor,
+                                    color = backgroundColor,
                                     shape = RoundedCornerShape(4.dp)
                                 )
-                                .clickable { onSemanaSeleccionada(actualSemana) },
+                                .clickable {
+                                    semanaSeleccionada = semana.numeroSemana
+                                    onSemanaSeleccionada(semana.numeroSemana)
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             AppTextos(
-                                text = actualSemana.toString(),
+                                text = semana.numeroSemana.toString(),
                                 style = theme.bodyText,
                                 modifier = Modifier.align(Alignment.Center)
                             )
@@ -98,3 +111,5 @@ fun PanelMesesSemanas(
         }
     }
 }
+
+

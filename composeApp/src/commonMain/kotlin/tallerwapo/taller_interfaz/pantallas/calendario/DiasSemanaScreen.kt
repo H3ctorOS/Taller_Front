@@ -7,8 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 import tallerwapo.core.contexto.AppContexto.citasRepo
 import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
 import tallerwapo.core.dominio.dto.calendario.DiaSemana
@@ -20,6 +18,7 @@ import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.formularios.citas.FormularioNuevaCita
 import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.pantallas.calendario.componentes.PanelMesesSemanas
+import java.util.*
 
 class DiasSemanaScreen : Screen {
 
@@ -29,16 +28,7 @@ class DiasSemanaScreen : Screen {
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
         var semanaDTO by remember { mutableStateOf<CitaSemanaDTO?>(null) }
-        var semanaActual by remember { mutableStateOf(0) }
         var mostrarFormularioNuevaCita by remember { mutableStateOf(false) }
-
-        // Cargar semana actual
-        LaunchedEffect(Unit) {
-            semanaDTO = citasRepo.citasSemanaActual()
-            semanaDTO?.let { s ->
-                semanaActual = s.numeroSemana
-            }
-        }
 
         Row(
             modifier = Modifier
@@ -47,9 +37,7 @@ class DiasSemanaScreen : Screen {
         ) {
             // ─── Panel izquierdo con meses y semanas ───
             PanelMesesSemanas(
-                semanaActual = semanaActual,
                 onSemanaSeleccionada = { semanaSeleccionada ->
-                    semanaActual = semanaSeleccionada
                     scope.launch {
                         semanaDTO = citasRepo.citasSemana(semanaSeleccionada)
                     }
@@ -60,39 +48,40 @@ class DiasSemanaScreen : Screen {
 
             // ─── Panel derecho con días de la semana ───
             semanaDTO?.let { s ->
-                // Lista de días que queremos mostrar (lunes a viernes)
-                val dias = listOf(DiaSemana.LUNES, DiaSemana.MARTES, DiaSemana.MIERCOLES, DiaSemana.JUEVES, DiaSemana.VIERNES)
+                val dias = listOf(
+                    DiaSemana.LUNES,
+                    DiaSemana.MARTES,
+                    DiaSemana.MIERCOLES,
+                    DiaSemana.JUEVES,
+                    DiaSemana.VIERNES
+                )
 
-                // Crear lista de triples: nombre del día, fecha, lista de citas UI
-                val diasConFecha = dias.map { dia ->
-                    Triple(
-                        dia.name.capitalize(Locale.getDefault()),  // "LUNES" -> "Lunes"
-                        s.fechas[dia] ?: -1L,
-                        s.getCitasBO(dia).map { CitaBoUI(it) }
-                    )
+                // Convertimos cada día a (NombreDia, fecha Long, List<CitaBoUI>)
+                val diasConFecha = dias.mapNotNull { dia ->
+                    s.fechas[dia]?.takeIf { it > 0 }?.let { fecha ->
+                        Triple(
+                            dia.name.replaceFirstChar { it.uppercase() }, // "LUNES" -> "Lunes"
+                            fecha,
+                            s.getCitasBO(dia).map { CitaBoUI(it) }
+                        )
+                    }
                 }
 
-                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-
-                // ─── Agrupar días por mes para mostrar el nombre del mes arriba ───
+                // Agrupar días por mes usando Calendar
                 val diasAgrupadosPorMes = diasConFecha.groupBy { (_, fecha, _) ->
-                    monthFormat.format(Date(fecha))
+                    val cal = Calendar.getInstance()
+                    cal.timeInMillis = fecha
+                    cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
+                        .replaceFirstChar { it.uppercase() }
                 }
 
-                // ─── Calculamos todos los días en orden para repartir equitativamente ───
                 val diasOrdenados = diasAgrupadosPorMes.flatMap { it.value }
 
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     // ─── Fila de nombres de meses ───
                     Row(modifier = Modifier.fillMaxWidth()) {
                         diasAgrupadosPorMes.forEach { (mes, diasMes) ->
-                            // Cada mes ocupa el ancho proporcional al número de días que tiene
-                            Row(
-                                modifier = Modifier.weight(diasMes.size.toFloat())
-                            ) {
+                            Row(modifier = Modifier.weight(diasMes.size.toFloat())) {
                                 AppTextos(
                                     text = mes,
                                     style = theme.subTitleText,
@@ -115,7 +104,10 @@ class DiasSemanaScreen : Screen {
                                     .weight(1f)
                                     .fillMaxHeight()
                             ) {
-                                val diaNumero = dayFormat.format(Date(fecha))
+                                val cal = Calendar.getInstance()
+                                cal.timeInMillis = fecha
+                                val diaNumero = cal.get(Calendar.DAY_OF_MONTH)
+
                                 AppTextos(
                                     text = "$nombreDia $diaNumero",
                                     style = theme.title,
@@ -147,9 +139,7 @@ class DiasSemanaScreen : Screen {
             mostrar = mostrarFormularioNuevaCita,
             onCerrar = { mostrarFormularioNuevaCita = false }
         ) {
-            FormularioNuevaCita(
-                onCerrar = { mostrarFormularioNuevaCita = false }
-            )
+            FormularioNuevaCita(onCerrar = { mostrarFormularioNuevaCita = false })
         }
     }
 }
