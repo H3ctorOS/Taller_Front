@@ -13,6 +13,8 @@ interface CitasApi {
     val ACTUALIZAR: String get() = "/citas/actualizarCita"
     val ELIMINAR: String get() = "/citas/eliminarCita"
 
+    val BUSCAR_POR_SEMANA_ANIO: String get() = "/citas/buscarCitasSemanaAnio"
+
     // Trabaja solo con DTOs
     suspend fun crearCita(cita: CitaDTO): RespuestaDTO<CitaDTO>
 
@@ -20,5 +22,5 @@ interface CitasApi {
 
     suspend fun buscarPorVehiculo(vehiculo: VehiculoDTO): RespuestaDTO<List<CitaDTO>>
 
-    suspend fun citasSemanaActual(): CitaSemanaDTO
+    suspend fun citasSemanaAnio(anio: Int, semana:Int): CitaSemanaDTO?
 }

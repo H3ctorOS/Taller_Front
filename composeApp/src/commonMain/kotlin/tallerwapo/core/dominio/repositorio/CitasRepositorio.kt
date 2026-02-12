@@ -7,13 +7,12 @@ import tallerwapo.core.dominio.dto.CitaDTO
 import tallerwapo.core.dominio.dto.RespuestaDTO
 import tallerwapo.core.dominio.dto.VehiculoDTO
 import tallerwapo.core.dominio.dto.calendario.CitaSemanaDTO
-import tallerwapo.core.dominio.dto.calendario.DiaSemana
+import tallerwapo.core.servicios.CalendarioService
 import tallerwapo.core.utils.Logs
-import kotlin.random.Random
 
 
 class CitasRepositorio(
-    private val apiRest: CitasApi
+    private val citasApi: CitasApi
 ) {
 
     // Crear cita: recibe BO, convierte a DTO para la API, devuelve BO
@@ -23,7 +22,7 @@ class CitasRepositorio(
         // BO -> DTO usando constructor del DTO
         val dto = CitaDTO(cita)
 
-        val respuestaDTO: RespuestaDTO<CitaDTO> = apiRest.crearCita(dto)
+        val respuestaDTO: RespuestaDTO<CitaDTO> = citasApi.crearCita(dto)
 
         // DTO -> BO usando constructor de CitaBO
         val boRespuesta = respuestaDTO.BoRespuesta?.let { CitaBO(it) }
@@ -42,7 +41,7 @@ class CitasRepositorio(
     // Buscar todas las citas
     suspend fun buscarTodas(): RespuestaDTO<List<CitaBO>> {
         Logs.info(this, "Buscando todas las citas")
-        val respuestaDTO: RespuestaDTO<List<CitaDTO>> = apiRest.buscarTodas()
+        val respuestaDTO: RespuestaDTO<List<CitaDTO>> = citasApi.buscarTodas()
 
         // Convertir lista de DTOs -> lista de BOs
         val boList = respuestaDTO.BoRespuesta?.map { CitaBO(it) } ?: emptyList()
@@ -65,7 +64,7 @@ class CitasRepositorio(
         // BO -> DTO usando constructor del DTO
         val vehiculoDTO = VehiculoDTO(vehiculoBO)
 
-        val respuestaDTO: RespuestaDTO<List<CitaDTO>> = apiRest.buscarPorVehiculo(vehiculoDTO)
+        val respuestaDTO: RespuestaDTO<List<CitaDTO>> = citasApi.buscarPorVehiculo(vehiculoDTO)
 
         // Convertir lista de DTOs -> lista de BOs
         val boList = respuestaDTO.BoRespuesta?.map { CitaBO(it) } ?: emptyList()
@@ -81,69 +80,11 @@ class CitasRepositorio(
         return respuestaBO
     }
 
-    // ───────── Semana actual ─────────
-    suspend fun citasSemanaActual(): CitaSemanaDTO {
-        val ahora = System.currentTimeMillis()
 
-        // Suponemos que la semana actual empieza hoy (lunes)
-        val dias = listOf(DiaSemana.LUNES, DiaSemana.MARTES, DiaSemana.MIERCOLES, DiaSemana.JUEVES, DiaSemana.VIERNES)
-
-        val fechasMap = mutableMapOf<DiaSemana, Long>()
-        val citasMap = mutableMapOf<DiaSemana, List<CitaDTO>>()
-
-        dias.forEachIndexed { index, dia ->
-            val fechaDia = ahora + index * 24 * 60 * 60 * 1000L
-            fechasMap[dia] = fechaDia
-            citasMap[dia] = listOf(crearCitaSimulada(Random.nextInt(), "Cita de prueba", index.toLong()))
-        }
-
-        return CitaSemanaDTO(
-            numeroSemana = 1,
-            fechas = fechasMap,
-            citas = citasMap
-        )
+    suspend fun citasSemanaAnioActual(numeroSemana: Int): CitaSemanaDTO? {
+        val anio = CalendarioService.getAnioActual()
+        return citasApi.citasSemanaAnio(anio,numeroSemana)
     }
 
-    // ───────── Semana específica ─────────
-    suspend fun citasSemana(numeroSemana: Int): CitaSemanaDTO {
-        val ahora = System.currentTimeMillis()
-        val dias = listOf(DiaSemana.LUNES, DiaSemana.MARTES, DiaSemana.MIERCOLES, DiaSemana.JUEVES, DiaSemana.VIERNES)
-
-        // Cada semana empieza numeroSemana-1 semanas después de "ahora"
-        val inicioSemana = ahora + (numeroSemana - 1) * 7 * 24 * 60 * 60 * 1000L
-
-        val fechasMap = mutableMapOf<DiaSemana, Long>()
-        val citasMap = mutableMapOf<DiaSemana, List<CitaDTO>>()
-
-        dias.forEachIndexed { index, dia ->
-            val fechaDia = inicioSemana + index * 24 * 60 * 60 * 1000L
-            fechasMap[dia] = fechaDia
-            citasMap[dia] = listOf(crearCitaSimulada(Random.nextInt(), "Cita semana $numeroSemana", index.toLong()))
-        }
-
-        return CitaSemanaDTO(
-            numeroSemana = numeroSemana,
-            fechas = fechasMap,
-            citas = citasMap
-        )
-    }
-
-    // ───────── Crear cita simulada ─────────
-    fun crearCitaSimulada(id: Int, concepto: String, diasOffset: Long, horaInicio: Long = 9): CitaDTO {
-        val ahora = System.currentTimeMillis()
-        val unaHora = 60 * 60 * 1000L // 1 hora en ms
-
-        val inicio = ahora + diasOffset * 24 * 60 * 60 * 1000L + horaInicio * unaHora
-        val fin = inicio + unaHora
-        return CitaDTO(
-            uuid = id,
-            vehiculoUuid = 1,
-            concepto = concepto,
-            fechaInicio = inicio,
-            fechaFinalizada = fin,
-            codigoEstado = "ACTIVO",
-            observaciones = "Observación de prueba"
-        )
-    }
 
 }

@@ -24,13 +24,10 @@ object CalendarioService {
         return java.time.ZonedDateTime.now(zone).year
     }
 
-
      suspend fun getSemanasAnioActual(): SemanasDelAnioDTO? {
         val api = AppContexto.gestionServidorApi
-
         return api.getSemanasAnio(getAnioActual())
     }
-
 
 
 }

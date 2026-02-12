@@ -6,11 +6,11 @@ import tallerwapo.core.dominio.dto.CitaDTO
 
 // Enum propio para los días de la semana (compatible con minSdk 24)
 enum class DiaSemana(val valor: Int) {
-    LUNES(1),
-    MARTES(2),
-    MIERCOLES(3),
-    JUEVES(4),
-    VIERNES(5),
+    lunes(1),
+    martes(2),
+    miércoles(3),
+    jueves(4),
+    viernes(5),
     SABADO(6),
     DOMINGO(7)
 }
@@ -27,19 +27,19 @@ data class CitaSemanaDTO(
         citas[dia]?.map { CitaBO(it) } ?: emptyList()
 
     // Métodos específicos por día (compatibilidad con código antiguo)
-    fun getLunesBO() = getCitasBO(DiaSemana.LUNES)
-    fun getMartesBO() = getCitasBO(DiaSemana.MARTES)
-    fun getMiercolesBO() = getCitasBO(DiaSemana.MIERCOLES)
-    fun getJuevesBO() = getCitasBO(DiaSemana.JUEVES)
-    fun getViernesBO() = getCitasBO(DiaSemana.VIERNES)
+    fun getLunesBO() = getCitasBO(DiaSemana.lunes)
+    fun getMartesBO() = getCitasBO(DiaSemana.martes)
+    fun getMiercolesBO() = getCitasBO(DiaSemana.miércoles)
+    fun getJuevesBO() = getCitasBO(DiaSemana.jueves)
+    fun getViernesBO() = getCitasBO(DiaSemana.viernes)
 
     // ───────── Métodos para obtener pares fecha + citas ─────────
     fun getFechaConCitas(dia: DiaSemana): Pair<Long, List<CitaBO>> =
         (fechas[dia] ?: -1L) to getCitasBO(dia)
 
-    fun getLunesConFecha() = getFechaConCitas(DiaSemana.LUNES)
-    fun getMartesConFecha() = getFechaConCitas(DiaSemana.MARTES)
-    fun getMiercolesConFecha() = getFechaConCitas(DiaSemana.MIERCOLES)
-    fun getJuevesConFecha() = getFechaConCitas(DiaSemana.JUEVES)
-    fun getViernesConFecha() = getFechaConCitas(DiaSemana.VIERNES)
+    fun getLunesConFecha() = getFechaConCitas(DiaSemana.lunes)
+    fun getMartesConFecha() = getFechaConCitas(DiaSemana.martes)
+    fun getMiercolesConFecha() = getFechaConCitas(DiaSemana.miércoles)
+    fun getJuevesConFecha() = getFechaConCitas(DiaSemana.jueves)
+    fun getViernesConFecha() = getFechaConCitas(DiaSemana.viernes)
 }

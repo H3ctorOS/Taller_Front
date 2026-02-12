@@ -30,7 +30,12 @@ class CitasApiImpl : CitasApi {
         )
     }
 
-    override suspend fun citasSemanaActual(): CitaSemanaDTO {
-        TODO("Not yet implemented")
+    override suspend fun citasSemanaAnio(anio: Int, semana:Int): CitaSemanaDTO? {
+        val respuesta:  RespuestaDTO <CitaSemanaDTO>  = ApiRest.get(
+            url = BASE_URL + BUSCAR_POR_SEMANA_ANIO,
+            params = mapOf("anio" to anio, "semana" to semana)
+        )
+
+        return respuesta.BoRespuesta
     }
 }

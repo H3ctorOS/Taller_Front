@@ -39,7 +39,7 @@ class DiasSemanaScreen : Screen {
             PanelMesesSemanas(
                 onSemanaSeleccionada = { semanaSeleccionada ->
                     scope.launch {
-                        semanaDTO = citasRepo.citasSemana(semanaSeleccionada)
+                        semanaDTO = citasRepo.citasSemanaAnioActual(semanaSeleccionada)
                     }
                 }
             )
@@ -49,11 +49,11 @@ class DiasSemanaScreen : Screen {
             // ─── Panel derecho con días de la semana ───
             semanaDTO?.let { s ->
                 val dias = listOf(
-                    DiaSemana.LUNES,
-                    DiaSemana.MARTES,
-                    DiaSemana.MIERCOLES,
-                    DiaSemana.JUEVES,
-                    DiaSemana.VIERNES
+                    DiaSemana.lunes,
+                    DiaSemana.martes,
+                    DiaSemana.miércoles,
+                    DiaSemana.jueves,
+                    DiaSemana.viernes
                 )
 
                 // Convertimos cada día a (NombreDia, fecha Long, List<CitaBoUI>)
