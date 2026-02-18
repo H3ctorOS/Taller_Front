@@ -36,17 +36,6 @@ fun AppSidebar(
         Spacer(Modifier.height(theme.paddingL))
 
         SidebarItem(
-            id = SidebarItemId.PRUEBAS,
-            "pruebas",
-            selectedItem = selectedItem
-        ) {
-            selectedItem = SidebarItemId.PRUEBAS
-            onScreenSelected(PruebasScreen())
-        }
-
-        Spacer(Modifier.height(theme.paddingL))
-
-        SidebarItem(
             id = SidebarItemId.CALENDARIO,
             "calendario",
             selectedItem = selectedItem
@@ -65,29 +54,18 @@ fun AppSidebar(
             selectedItem = SidebarItemId.CLIENTES
             onScreenSelected(ClientesScreen())
         }
-
-
+/*
         Spacer(Modifier.height(theme.paddingL))
 
         SidebarItem(
-            id = SidebarItemId.VEHICULOS,
-            "Vehiculos",
+            id = SidebarItemId.PRUEBAS,
+            "pruebas",
             selectedItem = selectedItem
         ) {
-            selectedItem = SidebarItemId.VEHICULOS
-
+            selectedItem = SidebarItemId.PRUEBAS
+            onScreenSelected(PruebasScreen())
         }
-
-        Spacer(Modifier.height(theme.paddingL))
-
-        SidebarItem(
-            id = SidebarItemId.CITAS,
-            "Citas",
-            selectedItem = selectedItem
-        ) {
-            selectedItem = SidebarItemId.CITAS
-
-        }
+*/
 
     }
 }
@@ -133,7 +111,5 @@ private fun SidebarItem(
 enum class SidebarItemId {
     PRUEBAS,
     CALENDARIO,
-    CLIENTES,
-    VEHICULOS,
-    CITAS
+    CLIENTES
 }

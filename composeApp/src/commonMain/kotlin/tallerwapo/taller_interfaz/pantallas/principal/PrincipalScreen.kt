@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.pantallas.calendario.DiasSemanaScreen
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.AppSidebar
 import tallerwapo.taller_interfaz.pantallas.principal.componentes.BarraInferior
 import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
@@ -28,7 +29,7 @@ class PrincipalScreen : Screen {
     override fun Content() {
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
         // Estado de la pantalla derecha
-        var currentScreen by remember { mutableStateOf<Screen>(PruebasScreen()) }
+        var currentScreen by remember { mutableStateOf<Screen>(DiasSemanaScreen()) }
 
         Box(Modifier.fillMaxSize().defaultMinSize(minHeight = 2000.dp, minWidth = 2000.dp)) {
             Column(modifier = Modifier.fillMaxSize().background(theme.backgroundColor)) {

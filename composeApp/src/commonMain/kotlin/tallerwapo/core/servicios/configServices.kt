@@ -7,7 +7,7 @@ object ConfigServices {
     private val config = AppContexto.config
 
     // --- Valores por defecto ---
-    private const val ipDefecto = "localhost"
+    const val ipDefecto = "localhost"
     private const val macDefecto = "00:11:22:33:44:55"
 
     // --- Inicializar valores al arrancar ---

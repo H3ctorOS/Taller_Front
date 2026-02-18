@@ -9,10 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
+import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.dto.gestion.servidor.ResumenDatosAppDTO
+import tallerwapo.core.servicios.ConfigServices
 import tallerwapo.core.servicios.GestionServidorServicios
 import tallerwapo.taller_interfaz.InterfazContext
+import tallerwapo.taller_interfaz.formularios.configuracion.FormularioConfiguracionApp
 import tallerwapo.taller_interfaz.objetos.botones.AppBoton
+import tallerwapo.taller_interfaz.objetos.emergentes.FormularioEmergente
 import tallerwapo.taller_interfaz.objetos.separadores.EspacioHorizontal
 import tallerwapo.taller_interfaz.objetos.separadores.SeparadorVertical
 import tallerwapo.taller_interfaz.objetos.textos.AppTextos
@@ -41,6 +45,8 @@ object BarraInferior {
         var botonProcesando by remember { mutableStateOf(false) }
 
         var reintentosJob: Job? by remember { mutableStateOf(null) }
+
+        var mostrarConfiguracion by remember { mutableStateOf(false) }
 
         // Función para verificar servidor con timeout de 5s
         suspend fun verificarServidor(): Boolean {
@@ -172,6 +178,29 @@ object BarraInferior {
 
                 Spacer(modifier = Modifier.weight(1f)) // Empuja el botón a la derecha
 
+
+
+                // --- Botón apagar servidor ---
+                if (AppContexto.ipServidor != ConfigServices.ipDefecto) {
+                    AppBoton(
+                        text = "Apagar servidor",
+                        onClick = { GestionServidorServicios.apagarServidor() }
+                    )
+                }
+
+                EspacioHorizontal(theme)
+
+                // --- Botón Configuración App ---
+                if (estadoBoton == EstadoBoton.INTENTANDO_ARRANCAR) {
+                    AppBoton(
+                        text = "Configuración App",
+                        onClick = { mostrarConfiguracion = true }
+                    )
+                }
+
+                EspacioHorizontal(theme)
+
+
                 // Botón dinámico
                 AppBoton(
                     text = when (estadoBoton) {
@@ -200,5 +229,17 @@ object BarraInferior {
                 }
             }
         }
+
+
+        // --- Nuevo emergente para configuración ---
+        FormularioEmergente(
+            mostrar = mostrarConfiguracion,
+            onCerrar = { mostrarConfiguracion = false }
+        ) {
+            FormularioConfiguracionApp(onCerrar = { mostrarConfiguracion = false })
+        }
+
+
+
     }
 }
