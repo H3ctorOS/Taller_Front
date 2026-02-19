@@ -1,19 +1,27 @@
 package tallerwapo.taller_interfaz
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.pantallas.principal.PrincipalScreen
+import tallerwapo.core.utils.DeviceType
+import tallerwapo.core.utils.getDeviceType
 
 @Composable
 @Preview
 fun App() {
+
+    val deviceType = getDeviceType()
+
     MaterialTheme {
-        Navigator(screen = PrincipalScreen()){ navigator ->
-            SlideTransition(navigator)
+
+        when (deviceType) {
+            DeviceType.MOBILE -> AppMovil()
+            DeviceType.TABLET,
+            DeviceType.DESKTOP -> AppPC()
         }
 
         // Emergentes sobre la pantalla
@@ -21,3 +29,14 @@ fun App() {
     }
 }
 
+@Composable
+private fun AppPC() {
+    Navigator(screen = PrincipalScreen()) { navigator ->
+        SlideTransition(navigator)
+    }
+}
+
+@Composable
+private fun AppMovil() {
+
+}
