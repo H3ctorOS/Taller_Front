@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.pantallas.principal.componentes
+package tallerwapo.taller_interfaz.pantallas.principal.componentesPC
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ import tallerwapo.taller_interfaz.objetos.textos.AppTextos
 import tallerwapo.taller_interfaz.objetos.textos.ItemTexto
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
-object BarraInferior {
+object BarraInferiorPC {
 
     private enum class EstadoBoton {
         ARRANCAR,

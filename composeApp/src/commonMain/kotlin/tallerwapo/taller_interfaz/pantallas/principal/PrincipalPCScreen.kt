@@ -17,13 +17,12 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.pantallas.calendario.DiasSemanaScreen
-import tallerwapo.taller_interfaz.pantallas.principal.componentes.AppSidebar
-import tallerwapo.taller_interfaz.pantallas.principal.componentes.BarraInferior
-import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
+import tallerwapo.taller_interfaz.pantallas.principal.componentesPC.AppSidebar
+import tallerwapo.taller_interfaz.pantallas.principal.componentesPC.BarraInferiorPC
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 
-class PrincipalScreen : Screen {
+class PrincipalPCScreen : Screen {
 
     @Composable
     override fun Content() {
@@ -46,7 +45,7 @@ class PrincipalScreen : Screen {
                 }
 
                 // Barra inferior
-                BarraInferior.Contenido()
+                BarraInferiorPC.Contenido()
             }
         }
     }

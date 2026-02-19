@@ -6,9 +6,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
-import tallerwapo.taller_interfaz.pantallas.principal.PrincipalScreen
+import tallerwapo.taller_interfaz.pantallas.principal.PrincipalPCScreen
 import tallerwapo.core.utils.DeviceType
 import tallerwapo.core.utils.getDeviceType
+import tallerwapo.taller_interfaz.pantallas.principal.PrincipalScreenMobile
 
 @Composable
 @Preview
@@ -31,12 +32,14 @@ fun App() {
 
 @Composable
 private fun AppPC() {
-    Navigator(screen = PrincipalScreen()) { navigator ->
+    Navigator(screen = PrincipalPCScreen()) { navigator ->
         SlideTransition(navigator)
     }
 }
 
 @Composable
 private fun AppMovil() {
-
+    Navigator(screen = PrincipalScreenMobile) { navigator ->
+        SlideTransition(navigator)
+    }
 }

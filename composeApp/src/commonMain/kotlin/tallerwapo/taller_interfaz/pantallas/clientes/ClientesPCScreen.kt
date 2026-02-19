@@ -25,7 +25,7 @@ import tallerwapo.taller_interfaz.objetos.listables.listas.ListaVehiculos
 import tallerwapo.taller_interfaz.pantallas.clientes.componentes.ClientesPanelinfo
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
-class ClientesScreen : Screen {
+class ClientesPCScreen : Screen {
 
     @Composable
     override fun Content() {

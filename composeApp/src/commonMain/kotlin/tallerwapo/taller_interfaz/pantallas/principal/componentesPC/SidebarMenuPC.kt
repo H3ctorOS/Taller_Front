@@ -1,4 +1,4 @@
-package tallerwapo.taller_interfaz.pantallas.principal.componentes
+package tallerwapo.taller_interfaz.pantallas.principal.componentesPC
 
 
 import androidx.compose.foundation.background
@@ -15,8 +15,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.pantallas.calendario.DiasSemanaScreen
-import tallerwapo.taller_interfaz.pantallas.clientes.ClientesScreen
-import tallerwapo.taller_interfaz.pantallas.pruebas.PruebasScreen
+import tallerwapo.taller_interfaz.pantallas.clientes.ClientesPCScreen
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
 
 @Composable
@@ -52,7 +51,7 @@ fun AppSidebar(
             selectedItem = selectedItem
         ) {
             selectedItem = SidebarItemId.CLIENTES
-            onScreenSelected(ClientesScreen())
+            onScreenSelected(ClientesPCScreen())
         }
 /*
         Spacer(Modifier.height(theme.paddingL))
