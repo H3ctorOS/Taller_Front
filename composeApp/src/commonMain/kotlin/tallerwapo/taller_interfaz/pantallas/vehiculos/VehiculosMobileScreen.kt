@@ -12,35 +12,43 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import tallerwapo.core.contexto.AppContexto
 import tallerwapo.core.dominio.bo.ClienteBO
 import tallerwapo.core.dominio.bo.VehiculoBO
+import tallerwapo.taller_interfaz.InterfazContext
 import tallerwapo.taller_interfaz.objetos.emergentes.MensajesEmergentes
 import tallerwapo.taller_interfaz.objetos.listables.listas.ListaVehiculos
+import tallerwapo.taller_interfaz.pantallas.principal.componentesMovil.BottomBarMobile
 import tallerwapo.taller_interfaz.themes.AppThemeProvider
-import tallerwapo.taller_interfaz.InterfazContext
 
-/**
- * Pantalla de vehículos para móviles
- * Muestra todos los vehículos de un cliente
- */
-class VehiculosMobileScreen(private val cliente: ClienteBO) : Screen {
+class VehiculosMobileScreen(
+    private val cliente: ClienteBO? = null
+) : Screen {
+
+    /** Propiedad pública para indicar si estamos mostrando todos los vehículos (modo global) */
+    val esModoGlobal: Boolean
+        get() = cliente == null
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+
         val navigator = LocalNavigator.current
-        val scope = rememberCoroutineScope()
         val theme = AppThemeProvider.getTheme(InterfazContext.themeMode)
 
         var listaVehiculos by remember { mutableStateOf<List<VehiculoBO>>(emptyList()) }
 
-        // Función para actualizar la lista de vehículos del cliente
         suspend fun actualizarListaVehiculos() {
             try {
-                listaVehiculos = AppContexto.vehiculosRepo.buscarPorCliente(cliente)
+                listaVehiculos = if (cliente != null) {
+                    AppContexto.vehiculosRepo.buscarPorCliente(cliente)
+                } else {
+                    AppContexto.vehiculosRepo.buscarTodos()
+                }
             } catch (e: Exception) {
                 MensajesEmergentes.mostrarDialogo(
                     titulo = "Error",
                     mensaje = e.message ?: "Error al cargar vehículos",
-                    botones = listOf(MensajesEmergentes.BotonDialogo("Ok") {})
+                    botones = listOf(
+                        MensajesEmergentes.BotonDialogo("Ok") {}
+                    )
                 )
             }
         }
@@ -52,13 +60,28 @@ class VehiculosMobileScreen(private val cliente: ClienteBO) : Screen {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Vehículos de ${cliente.nombre}") },
+                    title = {
+                        Text(
+                            if (cliente != null)
+                                "Vehículos de ${cliente.nombre}"
+                            else
+                                "Todos los vehículos"
+                        )
+                    },
                     navigationIcon = {
-                        IconButton(onClick = { navigator?.pop() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                        if (cliente != null) {
+                            IconButton(onClick = { navigator?.pop() }) {
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = "Atrás"
+                                )
+                            }
                         }
                     }
                 )
+            },
+            bottomBar = {
+                BottomBarMobile()
             }
         ) { padding ->
 
@@ -72,9 +95,11 @@ class VehiculosMobileScreen(private val cliente: ClienteBO) : Screen {
                 ListaVehiculos(
                     vehiculos = listaVehiculos,
                     vehiculoSeleccionado = null,
-                    onVehiculoSeleccionado = { /* opcional */ },
-                    onVehiculoDoubleClick = { /* opcional */ },
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    onVehiculoSeleccionado = {},
+                    onVehiculoDoubleClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     mostrarNew = false,
                     onNewClick = {}
                 )

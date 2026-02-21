@@ -29,9 +29,7 @@ object PrincipalScreenMobile : Screen {
                 )
             },
             bottomBar = {
-                BottomBarMobile { screen ->
-                    navigator?.push(screen)
-                }
+                BottomBarMobile()
             }
         ) { padding ->
 
